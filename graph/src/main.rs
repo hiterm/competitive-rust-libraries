@@ -44,58 +44,58 @@ fn main() {
 }
 
 // 幅優先探索
-fn bfs(vertex: usize, graph_list: &Vec<Vec<usize>>) {
+fn bfs(start: usize, graph_list: &Vec<Vec<usize>>) {
     let n = graph_list.len();
 
     let mut visited = vec![false; n];
     let mut queue: VecDeque<usize> = VecDeque::new();
 
-    visited[vertex] = true;
-    queue.push_back(vertex);
+    visited[start] = true;
+    queue.push_back(start);
 
     while !queue.is_empty() {
-        let v = queue.pop_front().unwrap();
-        debugln!("visit {}", v);
-        for &v2 in &graph_list[v] {
-            if visited[v2] == false {
-                visited[v2] = true;
-                queue.push_back(v2);
+        let vertex = queue.pop_front().unwrap();
+        debugln!("visit {}", vertex);
+        for &next in &graph_list[vertex] {
+            if visited[next] == false {
+                visited[next] = true;
+                queue.push_back(next);
             }
         }
     }
 }
 
 // 深さ優先探索
-fn dfs(vertex: usize, graph_list: &Vec<Vec<usize>>) {
+fn dfs(start: usize, graph_list: &Vec<Vec<usize>>) {
     let n = graph_list.len();
 
     let mut visited = vec![false; n];
     let mut stack: Vec<usize> = Vec::new();
 
-    visited[vertex] = true;
-    stack.push(vertex);
+    visited[start] = true;
+    stack.push(start);
 
     while !stack.is_empty() {
-        let v = stack.pop().unwrap();
-        debugln!("visit {}", v);
-        for &v2 in &graph_list[v] {
-            if visited[v2] == false {
-                visited[v2] = true;
-                stack.push(v2);
+        let vertex = stack.pop().unwrap();
+        debugln!("visit {}", vertex);
+        for &next in &graph_list[vertex] {
+            if visited[next] == false {
+                visited[next] = true;
+                stack.push(next);
             }
         }
     }
 }
 
 // 深さ優先探索（再帰）
-fn dfs_recursive(vertex: usize, graph_list: &Vec<Vec<usize>>, visited: &mut Vec<bool>) {
-    visited[vertex] = true;
+fn dfs_recursive(start: usize, graph_list: &Vec<Vec<usize>>, visited: &mut Vec<bool>) {
+    visited[start] = true;
 
-    debugln!("visit {}", vertex);
+    debugln!("visit {}", start);
 
-    for &v2 in &graph_list[vertex] {
-        if visited[v2] == false {
-            dfs_recursive(v2, &graph_list, visited);
+    for &next in &graph_list[start] {
+        if visited[next] == false {
+            dfs_recursive(next, &graph_list, visited);
         }
     }
 }
