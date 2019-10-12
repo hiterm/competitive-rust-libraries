@@ -41,8 +41,7 @@ fn main() {
     println!("");
 
     println!("start dfs recursive");
-    let mut visited = vec![false; n];
-    dfs_recursive(0, &graph_list, &mut visited);
+    dfs_recursive(0, &graph_list);
 
     println!("start dijkstra");
     let distances = dijkstra(0, &graph_list);
@@ -94,14 +93,21 @@ fn dfs(start: usize, graph_list: &Vec<Vec<usize>>) {
 }
 
 // 深さ優先探索（再帰）
-fn dfs_recursive(start: usize, graph_list: &Vec<Vec<usize>>, visited: &mut Vec<bool>) {
+fn dfs_recursive(start: usize, graph_list: &Vec<Vec<usize>>) {
+    let n = graph_list.len();
+    let mut visited = vec![false; n];
+
+    dfs_aux(start, graph_list, &mut visited);
+}
+// 補助関数
+fn dfs_aux(start: usize, graph_list: &Vec<Vec<usize>>, visited: &mut Vec<bool>) {
     visited[start] = true;
 
     debugln!("visit {}", start);
 
     for &next in &graph_list[start] {
         if visited[next] == false {
-            dfs_recursive(next, &graph_list, visited);
+            dfs_aux(next, &graph_list, visited);
         }
     }
 }
