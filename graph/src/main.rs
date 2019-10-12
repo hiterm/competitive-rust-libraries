@@ -1,5 +1,7 @@
 use std::io::Write;
 use std::collections::VecDeque;
+use std::collections::BinaryHeap;
+use std::cmp::Reverse;
 
 #[allow(unused)]
 macro_rules! debug {
@@ -41,6 +43,10 @@ fn main() {
     println!("start dfs recursive");
     let mut visited = vec![false; n];
     dfs_recursive(0, &graph_list, &mut visited);
+
+    println!("start dijkstra");
+    let distances = dijkstra(0, &graph_list);
+    println!("{:?}", distances);
 }
 
 // 幅優先探索
@@ -98,4 +104,30 @@ fn dfs_recursive(start: usize, graph_list: &Vec<Vec<usize>>, visited: &mut Vec<b
             dfs_recursive(next, &graph_list, visited);
         }
     }
+}
+
+// ダイクストラ法
+fn dijkstra(start: usize, graph_list: &Vec<Vec<usize>>) -> Vec<usize> {
+    let n = graph_list.len();
+    let mut distances = vec![std::usize::MAX >> 2; n];
+    distances[start] = 0;
+
+    // (distance, distination)
+    let mut queue: BinaryHeap<Reverse<(usize, usize)>> = BinaryHeap::new();
+    for vertex in 0..n {
+        queue.push(Reverse((distances[vertex], vertex)));
+    }
+
+    while !queue.is_empty() {
+        let Reverse((d, u)) = queue.pop().unwrap();
+        for &v in &graph_list[u] {
+            let alt = d + 1;
+            if distances[v] > alt {
+                distances[v] = alt;
+                queue.push(Reverse((alt, v)))
+            }
+        }
+    }
+
+    distances
 }
