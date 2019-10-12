@@ -126,7 +126,10 @@ fn dijkstra(start: usize, graph_list: &Vec<Vec<usize>>) -> Vec<usize> {
 
     while !queue.is_empty() {
         let Reverse((d, u)) = queue.pop().unwrap();
+        debugln!("u: {}", u);
+        debugln!("distances: {:?}", distances);
         for &v in &graph_list[u] {
+            debugln!("v: {}", v);
             let alt = d + 1;
             if distances[v] > alt {
                 distances[v] = alt;
