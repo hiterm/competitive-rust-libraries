@@ -1,7 +1,6 @@
 use std::io::Write;
 use std::collections::VecDeque;
 use std::collections::BinaryHeap;
-use std::cmp::Reverse;
 
 #[allow(unused)]
 macro_rules! debug {
@@ -112,13 +111,30 @@ fn dfs_aux(start: usize, graph_list: &Vec<Vec<usize>>, visited: &mut Vec<bool>) 
     }
 }
 
-// ダイクストラ法
+// 古いRust向けの標準と同じ機能を持つReverse
+#[derive(PartialEq, Eq, Debug)]
+struct Reverse<T> (T);
+
+impl<T: Ord> Ord for Reverse<T> {
+    fn cmp(&self, other: &Reverse<T>) -> std::cmp::Ordering {
+        self.0.cmp(&other.0).reverse()
+    }
+}
+
+impl<T: PartialOrd> PartialOrd for Reverse<T> {
+    fn partial_cmp(&self, other: &Reverse<T>) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0).map(|a| a.reverse())
+    }
+}
+
+// ダイクストラ法。辺の長さがすべて1の場合。
 fn dijkstra(start: usize, graph_list: &Vec<Vec<usize>>) -> Vec<usize> {
     let n = graph_list.len();
     let mut distances = vec![std::usize::MAX >> 2; n];
     distances[start] = 0;
 
-    // (distance, distination)
+    // BinaryHeapは最大ヒープなので、Reverseで距離最小のものを取り出せるようにする
+    // ヒープの中身は Reverse((distance, distination))
     let mut queue: BinaryHeap<Reverse<(usize, usize)>> = BinaryHeap::new();
     for vertex in 0..n {
         queue.push(Reverse((distances[vertex], vertex)));
@@ -139,4 +155,107 @@ fn dijkstra(start: usize, graph_list: &Vec<Vec<usize>>) -> Vec<usize> {
     }
 
     distances
+}
+
+// Warshall-Floyd法
+#[allow(unused)]
+fn warshall_floyd(ref graph_mat: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
+    let n = graph_mat.len();
+
+    let mut d = vec![vec![std::usize::MAX >> 2; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            if graph_mat[i][j] == 1 {
+                d[i][j] = 1;
+            }
+        }
+    }
+    for i in 0..n {
+        d[i][i] = 0;
+    }
+
+    for k in 0..n {
+        for i in 0..n {
+            for j in 0..n {
+                if d[i][j] > d[i][k] + d[k][j] {
+                    d[i][j] = d[i][k] + d[k][j];
+                }
+            }
+        }
+    }
+
+    d
+}
+
+// グラフの直径
+#[allow(unused)]
+fn graph_diameter(ref graph_mat: &Vec<Vec<usize>>) -> usize {
+    let d_mat = warshall_floyd(&graph_mat);
+    let mut diameter = 0;
+    for v in d_mat {
+        for d in v {
+            if d > diameter {
+                diameter = d;
+            }
+        }
+    }
+
+    diameter
+}
+
+// 木の直径．グラフが閉路を持たないときのみ使える。
+#[allow(unused)]
+fn tree_diameter(graph_list: &Vec<Vec<usize>>) -> usize {
+    let start = 0;
+    let d_v = dijkstra(start, graph_list);
+
+    let mut farthest = start;
+    let mut d_max = 0;
+    for (v, &d) in d_v.iter().enumerate() {
+        if d > d_max {
+            d_max = d;
+            farthest = v;
+        }
+    }
+
+    let start = farthest;
+    let mut d_max = 0;
+    let d_v = dijkstra(start, graph_list);
+    for (_, &d) in d_v.iter().enumerate() {
+        if d > d_max {
+            d_max = d;
+        }
+    }
+    d_max
+}
+
+// 2部グラフ判定
+#[allow(unused)]
+fn is_bipartite_graph(graph_list: &Vec<Vec<usize>>) -> bool {
+    let n = graph_list.len();
+
+    let mut stack: Vec<(usize, bool)> = vec![];
+    let mut colors = vec![None; n];
+
+    let start = 0;
+    stack.push((start, true));
+
+    while !stack.is_empty() {
+        let (vertex, color) = stack.pop().unwrap();
+
+        colors[vertex] = Some(color);
+
+        for &next in &graph_list[vertex] {
+            match colors[next] {
+                Some(next_color) => {
+                    if color == next_color {
+                        return false;
+                    }
+                },
+                None => stack.push((next, !color)),
+            }
+        }
+    }
+
+    true
 }
