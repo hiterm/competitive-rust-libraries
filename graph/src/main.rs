@@ -159,7 +159,7 @@ fn dijkstra(start: usize, graph_list: &Vec<Vec<usize>>) -> Vec<usize> {
 
 // Warshall-Floyd法
 #[allow(unused)]
-fn warshall_floyd(ref graph_mat: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
+fn warshall_floyd(graph_mat: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
     let n = graph_mat.len();
 
     let mut d = vec![vec![std::usize::MAX >> 2; n]; n];
@@ -189,7 +189,7 @@ fn warshall_floyd(ref graph_mat: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
 
 // グラフの直径
 #[allow(unused)]
-fn graph_diameter(ref graph_mat: &Vec<Vec<usize>>) -> usize {
+fn graph_diameter(graph_mat: &Vec<Vec<usize>>) -> usize {
     let d_mat = warshall_floyd(&graph_mat);
     let mut diameter = 0;
     for v in d_mat {
