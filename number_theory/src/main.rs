@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashSet, HashMap};
 
 fn main() {
     let a = 12;
@@ -14,6 +14,9 @@ fn main() {
     for i in 1..101 {
         println!("prime factor of {}: {:?}", i, prime_factor(i));
     }
+
+    println!("{:?}", divisors(12));
+    println!("{:?}", divisors(1000000000000));
 }
 
 fn gcd(a: usize, b: usize) -> usize {
@@ -61,4 +64,22 @@ fn prime_factor(n: usize) -> HashMap<usize, usize> {
     }
 
     factors
+}
+
+fn divisors(n: usize) -> HashSet<usize> {
+    let mut set = HashSet::new();
+    set.insert(1);
+
+    // 素朴な実装
+    // for (p, pow) in prime_factor(n) {
+    //     let set_prev = set.clone();
+    //     for i in 1..=pow {
+    //         set.extend(set_prev.iter().map(|a| a * p.pow(i as u32)));
+    //     }
+    // }
+
+    // iterator使用
+    prime_factor(n).iter().fold(set, |acc, (&p, &pow)| {
+        (0..=pow).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
+    })
 }
