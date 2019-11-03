@@ -1,4 +1,5 @@
 use std::collections::{HashSet, HashMap};
+use std::time::{Duration, Instant};
 
 fn main() {
     let a = 12;
@@ -15,8 +16,17 @@ fn main() {
         println!("prime factor of {}: {:?}", i, prime_factor(i));
     }
 
-    println!("{:?}", divisors(12));
-    println!("{:?}", divisors(1000000000000));
+    println!("{:?}", divisors_set(12));
+    let start = Instant::now();
+    println!("{:?}", divisors_set(10000000000000));
+    let end = start.elapsed();
+    println!("{}ms", end.as_millis());
+
+    println!("{:?}", divisors_vec(12));
+    let start = Instant::now();
+    println!("{:?}", divisors_vec(10000000000000));
+    let end = start.elapsed();
+    println!("{}ms", end.as_millis());
 }
 
 fn gcd(a: usize, b: usize) -> usize {
@@ -66,7 +76,13 @@ fn prime_factor(n: usize) -> HashMap<usize, usize> {
     factors
 }
 
-fn divisors(n: usize) -> HashSet<usize> {
+fn divisors_vec(n: usize) -> Vec<usize> {
+    prime_factor(n).iter().fold(vec![1], |acc, (&p, &pow)| {
+        (0..(pow + 1)).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
+    })
+}
+
+fn divisors_set(n: usize) -> HashSet<usize> {
     let mut set = HashSet::new();
     set.insert(1);
 
@@ -80,6 +96,6 @@ fn divisors(n: usize) -> HashSet<usize> {
 
     // iterator使用
     prime_factor(n).iter().fold(set, |acc, (&p, &pow)| {
-        (0..=pow).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
+        (0..(pow + 1)).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
     })
 }
