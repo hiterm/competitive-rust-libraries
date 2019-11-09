@@ -33,11 +33,11 @@ fn main() {
 
     println!("start bfs");
     bfs(0, &graph_list);
-    println!("");
+    println!();
 
     println!("start dfs");
     dfs(0, &graph_list);
-    println!("");
+    println!();
 
     println!("start dfs recursive");
     dfs_recursive(0, &graph_list);
@@ -48,7 +48,7 @@ fn main() {
 }
 
 // 幅優先探索
-fn bfs(start: usize, graph_list: &Vec<Vec<usize>>) {
+fn bfs(start: usize, graph_list: &[Vec<usize>]) {
     let n = graph_list.len();
 
     let mut visited = vec![false; n];
@@ -61,7 +61,7 @@ fn bfs(start: usize, graph_list: &Vec<Vec<usize>>) {
         let vertex = queue.pop_front().unwrap();
         debugln!("visit {}", vertex);
         for &next in &graph_list[vertex] {
-            if visited[next] == false {
+            if !visited[next] {
                 visited[next] = true;
                 queue.push_back(next);
             }
@@ -70,7 +70,7 @@ fn bfs(start: usize, graph_list: &Vec<Vec<usize>>) {
 }
 
 // 深さ優先探索
-fn dfs(start: usize, graph_list: &Vec<Vec<usize>>) {
+fn dfs(start: usize, graph_list: &[Vec<usize>]) {
     let n = graph_list.len();
 
     let mut visited = vec![false; n];
@@ -83,7 +83,7 @@ fn dfs(start: usize, graph_list: &Vec<Vec<usize>>) {
         let vertex = stack.pop().unwrap();
         debugln!("visit {}", vertex);
         for &next in &graph_list[vertex] {
-            if visited[next] == false {
+            if !visited[next] {
                 visited[next] = true;
                 stack.push(next);
             }
@@ -92,20 +92,20 @@ fn dfs(start: usize, graph_list: &Vec<Vec<usize>>) {
 }
 
 // 深さ優先探索（再帰）
-fn dfs_recursive(start: usize, graph_list: &Vec<Vec<usize>>) {
+fn dfs_recursive(start: usize, graph_list: &[Vec<usize>]) {
     let n = graph_list.len();
     let mut visited = vec![false; n];
 
     dfs_aux(start, graph_list, &mut visited);
 }
 // 補助関数
-fn dfs_aux(start: usize, graph_list: &Vec<Vec<usize>>, visited: &mut Vec<bool>) {
+fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
     visited[start] = true;
 
     debugln!("visit {}", start);
 
     for &next in &graph_list[start] {
-        if visited[next] == false {
+        if !visited[next] {
             dfs_aux(next, &graph_list, visited);
         }
     }
@@ -128,7 +128,7 @@ impl<T: PartialOrd> PartialOrd for Reverse<T> {
 }
 
 // ダイクストラ法。辺の長さがすべて1の場合。
-fn dijkstra(start: usize, graph_list: &Vec<Vec<usize>>) -> Vec<usize> {
+fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
     let n = graph_list.len();
     let mut distances = vec![std::usize::MAX >> 2; n];
     distances[start] = 0;
@@ -159,7 +159,7 @@ fn dijkstra(start: usize, graph_list: &Vec<Vec<usize>>) -> Vec<usize> {
 
 // Warshall-Floyd法
 #[allow(unused)]
-fn warshall_floyd(graph_mat: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
+fn warshall_floyd(graph_mat: &[Vec<usize>]) -> Vec<Vec<usize>> {
     let n = graph_mat.len();
 
     let mut d = vec![vec![std::usize::MAX >> 2; n]; n];
@@ -189,7 +189,7 @@ fn warshall_floyd(graph_mat: &Vec<Vec<usize>>) -> Vec<Vec<usize>> {
 
 // グラフの直径
 #[allow(unused)]
-fn graph_diameter(graph_mat: &Vec<Vec<usize>>) -> usize {
+fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
     let d_mat = warshall_floyd(&graph_mat);
     let mut diameter = 0;
     for v in d_mat {
@@ -205,7 +205,7 @@ fn graph_diameter(graph_mat: &Vec<Vec<usize>>) -> usize {
 
 // 木の直径．グラフが閉路を持たないときのみ使える。
 #[allow(unused)]
-fn tree_diameter(graph_list: &Vec<Vec<usize>>) -> usize {
+fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
     let start = 0;
     let d_v = dijkstra(start, graph_list);
 
@@ -231,7 +231,7 @@ fn tree_diameter(graph_list: &Vec<Vec<usize>>) -> usize {
 
 // 2部グラフ判定
 #[allow(unused)]
-fn is_bipartite_graph(graph_list: &Vec<Vec<usize>>) -> bool {
+fn is_bipartite_graph(graph_list: &[Vec<usize>]) -> bool {
     let n = graph_list.len();
 
     let mut stack: Vec<(usize, bool)> = vec![];

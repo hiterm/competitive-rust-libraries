@@ -1,5 +1,5 @@
 use std::collections::{HashSet, HashMap};
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 fn main() {
     let a = 12;
@@ -18,13 +18,13 @@ fn main() {
 
     println!("{:?}", divisors_set(12));
     let start = Instant::now();
-    println!("{:?}", divisors_set(10000000000000));
+    println!("{:?}", divisors_set(10_000_000_000_000));
     let end = start.elapsed();
     println!("{}ms", end.as_millis());
 
     println!("{:?}", divisors_vec(12));
     let start = Instant::now();
-    println!("{:?}", divisors_vec(10000000000000));
+    println!("{:?}", divisors_vec(10_000_000_000_000));
     let end = start.elapsed();
     println!("{}ms", end.as_millis());
 }
