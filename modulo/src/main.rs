@@ -9,11 +9,24 @@ fn main() {
     println!("{:?}", Modulo(3).pow(1000000000000000));
 }
 
+fn positive_rem(a: isize, b: usize) -> isize {
+    let b = b as isize;
+    let mut value = a % b;
+    if value < 0 {
+        value += b;
+    }
+    value
+}
+
 #[derive(Debug, Copy, Clone)]
 struct Modulo(isize);
 
 impl Modulo {
     const MODULO: isize = 10;
+
+    fn new(n: isize) -> Modulo {
+        Modulo(n % Modulo::MODULO)
+    }
 
     fn pow(self, p: usize) -> Modulo {
         if self == Modulo(0) {
@@ -44,11 +57,7 @@ impl Sub for Modulo {
     type Output = Modulo;
 
     fn sub(self, other: Modulo) -> Modulo {
-        let mut value = (self.0 - other.0) % Modulo::MODULO;
-        if value < 0 {
-            value += Modulo::MODULO;
-        }
-        Modulo(value)
+        Modulo(positive_rem(self.0 - other.0, Modulo::MODULO as usize))
     }
 }
 
@@ -67,3 +76,43 @@ impl PartialEq for Modulo {
 }
 
 impl Eq for Modulo {}
+
+#[cfg(test)]
+mod tests {
+    use super::Modulo;
+
+    #[test]
+    fn eq() {
+        assert_eq!(Modulo::new(1), Modulo::new(1 + Modulo::MODULO));
+    }
+
+    #[test]
+    fn add1() {
+        assert_eq!(Modulo(1), Modulo(5) + Modulo(6));
+    }
+
+    #[test]
+    fn add2() {
+        assert_eq!(Modulo(0), Modulo(4) + Modulo(6));
+    }
+
+    #[test]
+    fn sub1() {
+        assert_eq!(Modulo(2), Modulo(3) - Modulo(1));
+    }
+
+    #[test]
+    fn sub2() {
+        assert_eq!(Modulo(9), Modulo(1) - Modulo(2));
+    }
+
+    #[test]
+    fn mul() {
+        assert_eq!(Modulo(5), Modulo(5) * Modulo(5));
+    }
+
+    #[test]
+    fn pow() {
+        assert_eq!(Modulo(9), Modulo(7).pow(2));
+    }
+}
