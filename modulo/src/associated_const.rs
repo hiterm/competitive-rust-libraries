@@ -21,12 +21,11 @@ fn positive_rem(a: isize, b: usize) -> isize {
 #[derive(Debug, Copy, Clone)]
 struct Modulo(isize);
 
-const MODULO: isize = 10;
-
 impl Modulo {
+    const MODULO: isize = 10;
 
     fn new(n: isize) -> Modulo {
-        Modulo(n % MODULO)
+        Modulo(n % Modulo::MODULO)
     }
 
     fn pow(self, p: usize) -> Modulo {
@@ -50,7 +49,7 @@ impl Add for Modulo {
     type Output = Modulo;
 
     fn add(self, other: Modulo) -> Modulo {
-        Modulo((self.0 + other.0) % MODULO)
+        Modulo((self.0 + other.0) % Modulo::MODULO)
     }
 }
 
@@ -58,7 +57,7 @@ impl Sub for Modulo {
     type Output = Modulo;
 
     fn sub(self, other: Modulo) -> Modulo {
-        Modulo(positive_rem(self.0 - other.0, MODULO as usize))
+        Modulo(positive_rem(self.0 - other.0, Modulo::MODULO as usize))
     }
 }
 
@@ -66,7 +65,7 @@ impl Mul for Modulo {
     type Output = Modulo;
 
     fn mul(self, other: Modulo) -> Modulo {
-        Modulo((self.0 * other.0) % MODULO)
+        Modulo((self.0 * other.0) % Modulo::MODULO)
     }
 }
 
@@ -80,11 +79,11 @@ impl Eq for Modulo {}
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::Modulo;
 
     #[test]
     fn eq() {
-        assert_eq!(Modulo::new(1), Modulo::new(1 + MODULO));
+        assert_eq!(Modulo::new(1), Modulo::new(1 + Modulo::MODULO));
     }
 
     #[test]
