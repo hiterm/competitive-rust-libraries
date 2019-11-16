@@ -1,6 +1,6 @@
-use std::io::Write;
-use std::collections::VecDeque;
 use std::collections::BinaryHeap;
+use std::collections::VecDeque;
+use std::io::Write;
 
 #[allow(unused)]
 macro_rules! debug {
@@ -11,13 +11,20 @@ macro_rules! debugln {
     ($($format:tt)*) => (writeln!(std::io::stderr(), $($format)*).unwrap());
 }
 
+#[cfg(test)]
+mod tests;
+
 fn main() {
     let n = 4;
+    // graph shape:
+    // 0 - 1 - 3
+    //   \
+    //     2
     let graph_mat = vec![
         vec![0, 1, 1, 0],
         vec![1, 0, 0, 1],
         vec![1, 0, 0, 0],
-        vec![0, 1, 0, 0]
+        vec![0, 1, 0, 0],
     ];
     debugln!("{:?}", graph_mat);
 
@@ -45,6 +52,17 @@ fn main() {
     println!("start dijkstra");
     let distances = dijkstra(0, &graph_list);
     println!("{:?}", distances);
+
+    // graph shape:
+    // 0 -> 1 -> 3
+    //   ↘
+    //     2
+    let mut graph_list2 = vec![vec![]; n];
+    graph_list2[0].push(1);
+    graph_list2[0].push(2);
+    graph_list2[1].push(3);
+    println!("Topological Sort");
+    println!("{:?}", topological_sort(&graph_list2));
 }
 
 // 幅優先探索
@@ -113,7 +131,7 @@ fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
 
 // 古いRust向けの標準と同じ機能を持つReverse
 #[derive(PartialEq, Eq, Debug)]
-struct Reverse<T> (T);
+struct Reverse<T>(T);
 
 impl<T: Ord> Ord for Reverse<T> {
     fn cmp(&self, other: &Reverse<T>) -> std::cmp::Ordering {
@@ -251,11 +269,42 @@ fn is_bipartite_graph(graph_list: &[Vec<usize>]) -> bool {
                     if color == next_color {
                         return false;
                     }
-                },
+                }
                 None => stack.push((next, !color)),
             }
         }
     }
 
     true
+}
+
+fn topological_sort(graph_list: &[Vec<usize>]) -> Vec<usize> {
+    let n = graph_list.len();
+
+    let mut incoming_num = vec![0; n];
+    for edges in graph_list.iter() {
+        for &vertex in edges {
+            incoming_num[vertex] += 1;
+        }
+    }
+
+    // 入次数0の頂点集合
+    let mut stack: Vec<usize> = vec![];
+    for (vertex, &num) in incoming_num.iter().enumerate() {
+        if num == 0 {
+            stack.push(vertex);
+        }
+    }
+
+    let mut ret = vec![];
+    while let Some(vertex) = stack.pop() {
+        ret.push(vertex);
+        for &next in &graph_list[vertex] {
+            incoming_num[next] -= 1;
+            if incoming_num[next] == 0 {
+                stack.push(next);
+            }
+        }
+    }
+    ret
 }
