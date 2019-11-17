@@ -16,17 +16,19 @@ fn main() {
         println!("prime factor of {}: {:?}", i, prime_factor(i));
     }
 
-    println!("{:?}", divisors_set(12));
-    let start = Instant::now();
-    println!("{:?}", divisors_set(10_000_000_000_000));
-    let end = start.elapsed();
-    println!("{}ms", end.as_millis());
-
-    println!("{:?}", divisors_vec(12));
-    let start = Instant::now();
-    println!("{:?}", divisors_vec(10_000_000_000_000));
-    let end = start.elapsed();
-    println!("{}ms", end.as_millis());
+    // for newer rust version
+    //
+    // println!("{:?}", divisors_set(12));
+    // let start = Instant::now();
+    // println!("{:?}", divisors_set(10_000_000_000_000));
+    // let end = start.elapsed();
+    // println!("{}ms", end.as_millis());
+    //
+    // println!("{:?}", divisors_vec(12));
+    // let start = Instant::now();
+    // println!("{:?}", divisors_vec(10_000_000_000_000));
+    // let end = start.elapsed();
+    // println!("{}ms", end.as_millis());
 }
 
 fn gcd(a: usize, b: usize) -> usize {
@@ -98,4 +100,23 @@ fn divisors_set(n: usize) -> HashSet<usize> {
     prime_factor(n).iter().fold(set, |acc, (&p, &pow)| {
         (0..(pow + 1)).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
     })
+}
+
+fn binom_coef(n: usize, k: usize) -> usize {
+    let mut ret = 1;
+    for i in 1..(k + 1) {
+        ret = ret * (n - k + i) / i
+    }
+    ret
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn binom_coef_test(){
+        assert_eq!(6, binom_coef(4, 2));
+        assert_eq!(3, binom_coef(3, 2));
+        assert_eq!(20, binom_coef(6, 3));
+    }
 }
