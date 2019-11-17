@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Mul, Sub};
 
 fn main() {
     println!("{:?}", Modulo(5) + Modulo(6));
@@ -11,18 +11,19 @@ fn main() {
     println!("{:?}", Modulo(3).inv());
 }
 
-fn positive_rem(a: isize, b: usize) -> isize {
+fn positive_rem(a: isize, b: usize) -> usize {
     let b = b as isize;
     let mut value = a % b;
     if value < 0 {
         value += b;
     }
-    value
+    // TODO: TryFrom
+    value as usize
 }
 
 /// Return (x, y) s.t. ax + by = d where d = gcd(a, b)
 fn ext_gcd(a: usize, b: usize) -> (isize, isize) {
-    if b == 0{
+    if b == 0 {
         return (1, 0);
     }
 
@@ -33,13 +34,13 @@ fn ext_gcd(a: usize, b: usize) -> (isize, isize) {
 }
 
 #[derive(Debug, Copy, Clone)]
-struct Modulo(isize);
+struct Modulo(usize);
 
-const MODULO: isize = 11;
+const MODULO: usize = 11;
 
 impl Modulo {
-
-    fn new(n: isize) -> Modulo {
+    fn from_isize(n: isize) -> Modulo {
+        // TODO: use TryFrom
         Modulo(positive_rem(n, MODULO as usize))
     }
 
@@ -62,14 +63,14 @@ impl Modulo {
     // when MODULO is prime
     fn inv(self) -> Modulo {
         let (x, _) = ext_gcd(self.0 as usize, MODULO as usize);
-        Modulo::new(x)
+        Modulo::from_isize(x)
     }
 
     // when MODULO is prime
     fn binom_coef(n: isize, k: isize) -> Modulo {
-        let mut ret = Modulo::new(1);
+        let mut ret = Modulo::from_isize(1);
         for i in 1..(k + 1) {
-            ret = ret * Modulo::new(n - i + 1) * Modulo::new(i).inv();
+            ret = ret * Modulo::from_isize(n - i + 1) * Modulo::from_isize(i).inv();
         }
         ret
     }
@@ -87,7 +88,10 @@ impl Sub for Modulo {
     type Output = Modulo;
 
     fn sub(self, other: Modulo) -> Modulo {
-        Modulo(positive_rem(self.0 - other.0, MODULO as usize))
+        Modulo(positive_rem(
+            self.0 as isize - other.0 as isize,
+            MODULO as usize,
+        ))
     }
 }
 
@@ -113,7 +117,7 @@ mod tests {
 
     #[test]
     fn eq() {
-        assert_eq!(Modulo::new(1), Modulo::new(1 + MODULO));
+        assert_eq!(Modulo::from_isize(1), Modulo::from_isize((1 + MODULO) as isize));
     }
 
     #[test]
@@ -154,11 +158,13 @@ mod tests {
 
     #[test]
     fn ext_gcd_test() {
-        let a = 12isize; let b = 18isize;
+        let a = 12isize;
+        let b = 18isize;
         let (x, y) = ext_gcd(a as usize, b as usize);
         assert_eq!(6, a * x + b * y);
 
-        let a = 4isize; let b = 12isize;
+        let a = 4isize;
+        let b = 12isize;
         let (x, y) = ext_gcd(a as usize, b as usize);
         assert_eq!(4, a * x + b * y);
     }
