@@ -44,6 +44,19 @@ impl Modulo {
             self.pow(p - 1) * self
         }
     }
+
+    fn inv(self) -> Modulo {
+        self.pow((MODULO - 2) as usize)
+    }
+
+    fn binom(n: isize, k: isize) -> Modulo {
+        let mut ret = Modulo::new(1);
+        for i in 1..(k + 1) {
+            ret = ret * Modulo::new(n - i + 1) * Modulo::new(i).inv();
+            // debugln!("{:?}", ret);
+        }
+        ret
+    }
 }
 
 impl Add for Modulo {
