@@ -11,9 +11,6 @@ macro_rules! debugln {
     ($($format:tt)*) => (writeln!(std::io::stderr(), $($format)*).unwrap());
 }
 
-#[cfg(test)]
-mod tests;
-
 fn main() {
     let n = 4;
     // graph shape:
@@ -307,4 +304,9 @@ fn topological_sort(graph_list: &[Vec<usize>]) -> Vec<usize> {
         }
     }
     ret
+}
+
+#[cfg(test)]
+mod tests {
+    // TODO
 }
