@@ -9,12 +9,17 @@ fn main() {
     println!("{:?}", Modulo::from(3).pow(1000000000000000));
     println!("{:?}", Modulo::from(2).inv());
     println!("{:?}", Modulo::from(3).inv());
+
+    let mut modulo_utils = modulo::ModuloUtils::new();
+    println!("{:?}", modulo_utils.binom_coef(4, 2));
+    println!("{:?}", modulo_utils);
 }
 
 mod modulo {
-    use std::ops::{Add, Mul, Sub};
+    use std::ops::{Add, Mul, Sub, Neg};
 
-    const MODULO: usize = 11;
+    const MODULO: usize = 1_000_000_007;
+    // const MODULO: usize = 11;
 
     fn positive_rem(a: isize, b: usize) -> usize {
         let b = b as isize;
@@ -84,14 +89,6 @@ mod modulo {
             Modulo::from(x)
         }
 
-        // when MODULO is prime
-        pub fn binom_coef(n: isize, k: isize) -> Modulo {
-            let mut ret = Modulo::from(1);
-            for i in 1..(k + 1) {
-                ret = ret * Modulo::from(n - i + 1) * Modulo::from(i).inv();
-            }
-            ret
-        }
     }
 
     impl Add for Modulo {
@@ -118,6 +115,14 @@ mod modulo {
         }
     }
 
+    impl Neg for Modulo {
+        type Output = Modulo;
+
+        fn neg(self) -> Self::Output {
+            Modulo::from(0) - self
+        }
+    }
+
     impl PartialEq for Modulo {
         fn eq(&self, &other: &Self) -> bool {
             self.0 == other.0
@@ -125,6 +130,41 @@ mod modulo {
     }
 
     impl Eq for Modulo {}
+
+    #[derive(Debug)]
+    pub struct ModuloUtils {
+        factorial: Vec<Modulo>,
+        factorial_inv: Vec<Modulo>,
+        inv: Vec<Modulo>,
+    }
+
+    impl ModuloUtils {
+        pub fn new() -> ModuloUtils {
+            ModuloUtils {
+                factorial: vec![Modulo::from(1), Modulo::from(1)],
+                factorial_inv: vec![Modulo::from(1), Modulo::from(1)],
+                inv: vec![Modulo::from(0), Modulo::from(1)],
+            }
+        }
+
+        // when MODULO is prime
+        pub fn binom_coef(&mut self, n: usize, k: usize) -> Modulo {
+            let len = self.factorial.len();
+            if len < n + 1 {
+                for i in len..(n + 1) {
+                    let prev = *self.factorial.last().unwrap();
+                    self.factorial.push(prev * Modulo::from(i));
+
+                    let inv_i = - self.inv[MODULO % i] * Modulo::from(MODULO / i);
+                    self.inv.push(inv_i);
+
+                    let prev = *self.factorial_inv.last().unwrap();
+                    self.factorial_inv.push(prev * self.inv[i]);
+                }
+            }
+            self.factorial[n] * self.factorial_inv[k] * self.factorial_inv[n - k]
+        }
+    }
 
     #[cfg(test)]
     mod tests {
@@ -189,7 +229,11 @@ mod modulo {
 
         #[test]
         fn binom_coef() {
-            assert_eq!(Modulo::from(6), Modulo::binom_coef(4, 2));
+            let mut modulo_utils = ModuloUtils::new();
+            assert_eq!(Modulo::from(6), modulo_utils.binom_coef(4, 2));
+            assert_eq!(Modulo::from(3), modulo_utils.binom_coef(3, 1));
+            assert_eq!(Modulo::from(1), modulo_utils.binom_coef(3, 0));
+            assert_eq!(Modulo::from(10), modulo_utils.binom_coef(5, 2));
         }
     }
 }
