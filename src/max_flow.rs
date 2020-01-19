@@ -54,7 +54,6 @@ struct Edge {
 fn max_flow(source: usize, sink: usize, graph: &mut Graph) -> usize {
     let n = graph.len();
 
-
     let mut flow = 0;
     loop {
         let mut level: Vec<Option<usize>> = vec![None; n];
@@ -90,7 +89,14 @@ fn bfs(source: usize, graph: &Graph, level: &mut Vec<Option<usize>>) {
     }
 }
 
-fn dfs(v: usize, t: usize, f: usize, graph: &mut Graph, level: &Vec<Option<usize>>, iter: &mut Vec<usize>) -> usize {
+fn dfs(
+    v: usize,
+    t: usize,
+    f: usize,
+    graph: &mut Graph,
+    level: &Vec<Option<usize>>,
+    iter: &mut Vec<usize>,
+) -> usize {
     if v == t {
         return f;
     }
@@ -134,7 +140,15 @@ fn bipartite_matching(x: usize, y: usize, edges: &Vec<(usize, usize)>) -> usize 
 
 fn add_edge(from: usize, to: usize, cap: usize, graph: &mut Graph) {
     let l = graph[to].len();
-    graph[from].push(Edge {to: to, cap: cap, rev: l});
+    graph[from].push(Edge {
+        to: to,
+        cap: cap,
+        rev: l,
+    });
     let l = graph[from].len();
-    graph[to].push(Edge {to: from, cap: 0, rev: l - 1});
+    graph[to].push(Edge {
+        to: from,
+        cap: 0,
+        rev: l - 1,
+    });
 }
