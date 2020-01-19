@@ -33,10 +33,7 @@ fn main() {
                 let c = ws.next().unwrap().parse().unwrap();
                 (a, b, c)
             };
-            let l = v[to].len();
-            v[from].push(Edge {to: to, cap: cap, rev: l});
-            let l = v[from].len();
-            v[to].push(Edge {to: from, cap: 0, rev: l - 1});
+            add_edge(from, to, cap, &mut v);
         }
         v
     };
