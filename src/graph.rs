@@ -59,7 +59,24 @@ fn main() {
     graph_list2[0].push(2);
     graph_list2[1].push(3);
     println!("Topological Sort");
-    println!("{:?}", topological_sort(&graph_list2));
+    match topological_sort(&graph_list2) {
+        Some(v) => println!("{:?}", v),
+        None => println!("Graph has a closed path.")
+    }
+
+    // graph shape:
+    // 0 -> 1
+    //   ↖  ↓
+    //      2
+    let mut graph_list3 = vec![vec![]; n];
+    graph_list3[0].push(1);
+    graph_list3[1].push(2);
+    graph_list3[2].push(0);
+    println!("Topological Sort");
+    match topological_sort(&graph_list3) {
+        Some(v) => println!("{:?}", v),
+        None => println!("Graph has a closed path.")
+    }
 }
 
 // 幅優先探索
@@ -275,7 +292,7 @@ fn is_bipartite_graph(graph_list: &[Vec<usize>]) -> bool {
     true
 }
 
-fn topological_sort(graph_list: &[Vec<usize>]) -> Vec<usize> {
+fn topological_sort(graph_list: &[Vec<usize>]) -> Option<Vec<usize>> {
     let n = graph_list.len();
 
     let mut incoming_num = vec![0; n];
@@ -303,7 +320,12 @@ fn topological_sort(graph_list: &[Vec<usize>]) -> Vec<usize> {
             }
         }
     }
-    ret
+
+    if incoming_num.iter().filter(|a| **a != 0).count() == 0 {
+        Some(ret)
+    } else {
+        None
+    }
 }
 
 #[cfg(test)]
