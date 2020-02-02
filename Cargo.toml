@@ -27,4 +27,8 @@ path = "src/max_flow.rs"
 name = "binary_search"
 path = "src/binary_search.rs"
 
+[[bin]]
+name = "integer"
+path = "src/integer.rs"
+
 [dependencies]
