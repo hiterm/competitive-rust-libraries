@@ -169,75 +169,75 @@ mod modulo {
             self.factorial[n] * self.factorial_inv[k] * self.factorial_inv[n - k]
         }
     }
-
-    #[cfg(test)]
-    mod tests {
-        use super::*;
-
-        #[test]
-        fn eq() {
-            assert_eq!(
-                Modulo::from(1),
-                Modulo::from((1 + MODULO) as isize)
-            );
-        }
-
-        #[test]
-        fn add1() {
-            assert_eq!(Modulo::from(1), Modulo::from(6) + Modulo::from(6));
-        }
-
-        #[test]
-        fn add2() {
-            assert_eq!(Modulo::from(0), Modulo::from(5) + Modulo::from(6));
-        }
-
-        #[test]
-        fn sub1() {
-            assert_eq!(Modulo::from(2), Modulo::from(3) - Modulo::from(1));
-        }
-
-        #[test]
-        fn sub2() {
-            assert_eq!(Modulo::from(10), Modulo::from(1) - Modulo::from(2));
-        }
-
-        #[test]
-        fn mul() {
-            assert_eq!(Modulo::from(3), Modulo::from(5) * Modulo::from(5));
-        }
-
-        #[test]
-        fn pow() {
-            assert_eq!(Modulo::from(5), Modulo::from(7).pow(2));
-        }
-
-        #[test]
-        fn inv() {
-            assert_eq!(Modulo::from(1), Modulo::from(2) * Modulo::from(2).inv());
-            assert_eq!(Modulo::from(1), Modulo::from(3) * Modulo::from(3).inv());
-        }
-
-        #[test]
-        fn ext_gcd_test() {
-            let a = 12isize;
-            let b = 18isize;
-            let (x, y) = ext_gcd(a as usize, b as usize);
-            assert_eq!(6, a * x + b * y);
-
-            let a = 4isize;
-            let b = 12isize;
-            let (x, y) = ext_gcd(a as usize, b as usize);
-            assert_eq!(4, a * x + b * y);
-        }
-
-        #[test]
-        fn binom_coef() {
-            let mut modulo_utils = ModuloUtils::new();
-            assert_eq!(Modulo::from(6), modulo_utils.binom_coef(4, 2));
-            assert_eq!(Modulo::from(3), modulo_utils.binom_coef(3, 1));
-            assert_eq!(Modulo::from(1), modulo_utils.binom_coef(3, 0));
-            assert_eq!(Modulo::from(10), modulo_utils.binom_coef(5, 2));
-        }
-    }
 }
+
+
+// Tests for MODULO = 11
+//
+// #[cfg(test)]
+// mod tests {
+//     use modulo::*;
+//
+//     #[test]
+//     fn eq() {
+//         assert_eq!(Modulo::from(1), Modulo::from((1 + MODULO) as isize));
+//     }
+//
+//     #[test]
+//     fn add1() {
+//         assert_eq!(Modulo::from(1), Modulo::from(6) + Modulo::from(6));
+//     }
+//
+//     #[test]
+//     fn add2() {
+//         assert_eq!(Modulo::from(0), Modulo::from(5) + Modulo::from(6));
+//     }
+//
+//     #[test]
+//     fn sub1() {
+//         assert_eq!(Modulo::from(2), Modulo::from(3) - Modulo::from(1));
+//     }
+//
+//     #[test]
+//     fn sub2() {
+//         assert_eq!(Modulo::from(10), Modulo::from(1) - Modulo::from(2));
+//     }
+//
+//     #[test]
+//     fn mul() {
+//         assert_eq!(Modulo::from(3), Modulo::from(5) * Modulo::from(5));
+//     }
+//
+//     #[test]
+//     fn pow() {
+//         assert_eq!(Modulo::from(5), Modulo::from(7).pow(2));
+//     }
+//
+//     #[test]
+//     fn inv() {
+//         assert_eq!(Modulo::from(1), Modulo::from(2) * Modulo::from(2).inv());
+//         assert_eq!(Modulo::from(1), Modulo::from(3) * Modulo::from(3).inv());
+//     }
+//
+//     #[test]
+//     fn ext_gcd_test() {
+//         let a = 12isize;
+//         let b = 18isize;
+//         let (x, y) = ext_gcd(a as usize, b as usize);
+//         assert_eq!(6, a * x + b * y);
+//
+//         let a = 4isize;
+//         let b = 12isize;
+//         let (x, y) = ext_gcd(a as usize, b as usize);
+//         assert_eq!(4, a * x + b * y);
+//     }
+//
+//     #[test]
+//     fn binom_coef() {
+//         let mut modulo_utils = ModuloUtils::new();
+//         assert_eq!(Modulo::from(6), modulo_utils.binom_coef(4, 2));
+//         assert_eq!(Modulo::from(3), modulo_utils.binom_coef(3, 1));
+//         assert_eq!(Modulo::from(1), modulo_utils.binom_coef(3, 0));
+//         assert_eq!(Modulo::from(10), modulo_utils.binom_coef(5, 2));
+//     }
+// }
