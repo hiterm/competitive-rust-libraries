@@ -149,6 +149,10 @@ mod modulo {
 
         // when MODULO is prime
         pub fn binom_coef(&mut self, n: usize, k: usize) -> Modulo {
+            if n < k {
+                return Modulo::from(0);
+            }
+
             let len = self.factorial.len();
             if len < n + 1 {
                 for i in len..(n + 1) {
