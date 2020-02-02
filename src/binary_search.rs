@@ -60,6 +60,10 @@ fn binary_search_vec_max<T, F>(v: &[T], condition: F) -> Option<usize>
 where
     F: Fn(&T) -> bool,
 {
+    if v.is_empty() {
+        return None;
+    }
+
     let len = v.len();
     if condition(&v[len - 1]) {
         return Some(len - 1);
@@ -86,6 +90,10 @@ fn binary_search_vec_min<T, F>(v: &[T], condition: F) -> Option<usize>
 where
     F: Fn(&T) -> bool,
 {
+    if v.is_empty() {
+        return None;
+    }
+
     let len = v.len();
 
     if condition(&v[0]) {
@@ -152,19 +160,25 @@ mod tests {
 
     #[test]
     fn binary_search_vec_max_test() {
-        let v = vec![0, 1, 2, 3, 4, 5];
-        assert_eq!(Some(3), binary_search_vec_max(&v, |x| *x <= 3));
-        assert_eq!(Some(0), binary_search_vec_max(&v, |x| *x <= 0));
-        assert_eq!(Some(5), binary_search_vec_max(&v, |x| *x >= 0));
-        assert_eq!(None, binary_search_vec_max(&v, |x| *x >= 100));
+        let v1 = vec![0, 1, 2, 3, 4, 5];
+        assert_eq!(Some(3), binary_search_vec_max(&v1, |x| *x <= 3));
+        assert_eq!(Some(0), binary_search_vec_max(&v1, |x| *x <= 0));
+        assert_eq!(Some(5), binary_search_vec_max(&v1, |x| *x >= 0));
+        assert_eq!(None, binary_search_vec_max(&v1, |x| *x >= 100));
+
+        let v2: Vec<usize> = vec![];
+        assert_eq!(None, binary_search_vec_max(&v2, |x| *x <= 3));
     }
 
     #[test]
     fn binary_search_vec_min_test() {
-        let v = vec![0, 1, 2, 3, 4, 5];
-        assert_eq!(Some(3), binary_search_vec_min(&v, |x| *x >= 3));
-        assert_eq!(Some(5), binary_search_vec_min(&v, |x| *x >= 5));
-        assert_eq!(Some(0), binary_search_vec_min(&v, |x| *x <= 5));
-        assert_eq!(None, binary_search_vec_min(&v, |x| *x >= 100));
+        let v1 = vec![0, 1, 2, 3, 4, 5];
+        assert_eq!(Some(3), binary_search_vec_min(&v1, |x| *x >= 3));
+        assert_eq!(Some(5), binary_search_vec_min(&v1, |x| *x >= 5));
+        assert_eq!(Some(0), binary_search_vec_min(&v1, |x| *x <= 5));
+        assert_eq!(None, binary_search_vec_min(&v1, |x| *x >= 100));
+
+        let v2: Vec<usize> = vec![];
+        assert_eq!(None, binary_search_vec_max(&v2, |x| *x >= 3));
     }
 }
