@@ -13,10 +13,20 @@ fn main() {
     let mut modulo_utils = modulo::ModuloUtils::new();
     println!("{:?}", modulo_utils.binom_coef(4, 2));
     println!("{:?}", modulo_utils);
+
+    let mut a = ModInt::from(1);
+    a += ModInt::from(1);
+    println!("{:?}", a);
+    let mut a = ModInt::from(2);
+    a *= ModInt::from(2);
+    println!("{:?}", a);
+    let mut a = ModInt::from(3);
+    a -= ModInt::from(2);
+    println!("{:?}", a);
 }
 
 mod modulo {
-    use std::ops::{Add, Mul, Neg, Sub};
+    use std::ops::{Add, Mul, Neg, Sub, AddAssign, MulAssign, SubAssign};
 
     pub const MODULO: usize = 1_000_000_007;
     // const MODULO: usize = 11;
@@ -121,6 +131,24 @@ mod modulo {
 
         fn neg(self) -> Self::Output {
             ModInt::from(0) - self
+        }
+    }
+
+    impl AddAssign for ModInt {
+        fn add_assign(&mut self, other: Self) {
+            *self = *self + other;
+        }
+    }
+
+    impl MulAssign for ModInt {
+        fn mul_assign(&mut self, other: Self) {
+            *self = *self * other;
+        }
+    }
+
+    impl SubAssign for ModInt {
+        fn sub_assign(&mut self, other: Self) {
+            *self = *self - other;
         }
     }
 
