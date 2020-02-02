@@ -105,6 +105,14 @@ fn divisors_set(n: usize) -> HashSet<usize> {
 }
 
 fn binom_coef(n: usize, k: usize) -> usize {
+    if n < k {
+        return 0;
+    }
+
+    if n - k < k {
+        return binom_coef(n, n - k);
+    }
+
     let mut ret = 1;
     for i in 1..(k + 1) {
         ret = ret * (n - k + i) / i
@@ -120,5 +128,9 @@ mod tests {
         assert_eq!(6, binom_coef(4, 2));
         assert_eq!(3, binom_coef(3, 2));
         assert_eq!(20, binom_coef(6, 3));
+        assert_eq!(1, binom_coef(10, 0));
+        assert_eq!(10, binom_coef(10, 1));
+        assert_eq!(1, binom_coef(10, 10));
+        assert_eq!(0, binom_coef(2, 3));
     }
 }
