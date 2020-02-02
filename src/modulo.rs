@@ -1,14 +1,14 @@
-use modulo::Modulo;
+use modulo::ModInt;
 
 fn main() {
-    println!("{:?}", Modulo::from(5) + Modulo::from(6));
-    println!("{:?}", Modulo::from(1) - Modulo::from(2));
-    println!("{:?}", Modulo::from(3) - Modulo::from(1));
-    println!("{:?}", Modulo::from(5) * Modulo::from(5));
-    println!("{:?}", Modulo::from(3).pow(2));
-    println!("{:?}", Modulo::from(3).pow(1000000000000000));
-    println!("{:?}", Modulo::from(2).inv());
-    println!("{:?}", Modulo::from(3).inv());
+    println!("{:?}", ModInt::from(5) + ModInt::from(6));
+    println!("{:?}", ModInt::from(1) - ModInt::from(2));
+    println!("{:?}", ModInt::from(3) - ModInt::from(1));
+    println!("{:?}", ModInt::from(5) * ModInt::from(5));
+    println!("{:?}", ModInt::from(3).pow(2));
+    println!("{:?}", ModInt::from(3).pow(1000000000000000));
+    println!("{:?}", ModInt::from(2).inv());
+    println!("{:?}", ModInt::from(3).inv());
 
     let mut modulo_utils = modulo::ModuloUtils::new();
     println!("{:?}", modulo_utils.binom_coef(4, 2));
@@ -45,35 +45,35 @@ mod modulo {
     }
 
     #[derive(Debug, Copy, Clone)]
-    pub struct Modulo(pub usize);
+    pub struct ModInt(pub usize);
 
-    impl From<usize> for Modulo {
-        fn from(n: usize) -> Modulo {
-            Modulo(n % MODULO)
+    impl From<usize> for ModInt {
+        fn from(n: usize) -> ModInt {
+            ModInt(n % MODULO)
         }
     }
 
-    impl From<isize> for Modulo {
-        fn from(n: isize) -> Modulo {
+    impl From<isize> for ModInt {
+        fn from(n: isize) -> ModInt {
             // TODO: use TryFrom
-            Modulo(positive_rem(n, MODULO as usize))
+            ModInt(positive_rem(n, MODULO as usize))
         }
     }
 
-    impl From<i32> for Modulo {
-        fn from(n: i32) -> Modulo {
+    impl From<i32> for ModInt {
+        fn from(n: i32) -> ModInt {
             // TODO: use TryFrom
-            Modulo(positive_rem(n as isize, MODULO as usize))
+            ModInt(positive_rem(n as isize, MODULO as usize))
         }
     }
 
-    impl Modulo {
-        pub fn pow(self, p: usize) -> Modulo {
-            if self == Modulo::from(0) {
-                return Modulo::from(0);
+    impl ModInt {
+        pub fn pow(self, p: usize) -> ModInt {
+            if self == ModInt::from(0) {
+                return ModInt::from(0);
             }
             if p == 0 {
-                return Modulo::from(1);
+                return ModInt::from(1);
             }
 
             if p % 2 == 0 {
@@ -86,81 +86,81 @@ mod modulo {
 
         // when MODULO is prime
         #[allow(unused)]
-        pub fn inv(self) -> Modulo {
+        pub fn inv(self) -> ModInt {
             let (x, _) = ext_gcd(self.0 as usize, MODULO as usize);
-            Modulo::from(x)
+            ModInt::from(x)
         }
     }
 
-    impl Add for Modulo {
-        type Output = Modulo;
+    impl Add for ModInt {
+        type Output = ModInt;
 
-        fn add(self, other: Modulo) -> Modulo {
-            Modulo::from(self.0 + other.0)
+        fn add(self, other: ModInt) -> ModInt {
+            ModInt::from(self.0 + other.0)
         }
     }
 
-    impl Sub for Modulo {
-        type Output = Modulo;
+    impl Sub for ModInt {
+        type Output = ModInt;
 
-        fn sub(self, other: Modulo) -> Modulo {
-            Modulo::from(self.0 as isize - other.0 as isize)
+        fn sub(self, other: ModInt) -> ModInt {
+            ModInt::from(self.0 as isize - other.0 as isize)
         }
     }
 
-    impl Mul for Modulo {
-        type Output = Modulo;
+    impl Mul for ModInt {
+        type Output = ModInt;
 
-        fn mul(self, other: Modulo) -> Modulo {
-            Modulo::from(self.0 * other.0)
+        fn mul(self, other: ModInt) -> ModInt {
+            ModInt::from(self.0 * other.0)
         }
     }
 
-    impl Neg for Modulo {
-        type Output = Modulo;
+    impl Neg for ModInt {
+        type Output = ModInt;
 
         fn neg(self) -> Self::Output {
-            Modulo::from(0) - self
+            ModInt::from(0) - self
         }
     }
 
-    impl PartialEq for Modulo {
+    impl PartialEq for ModInt {
         fn eq(&self, &other: &Self) -> bool {
             self.0 == other.0
         }
     }
 
-    impl Eq for Modulo {}
+    impl Eq for ModInt {}
 
     #[derive(Debug)]
     pub struct ModuloUtils {
-        factorial: Vec<Modulo>,
-        factorial_inv: Vec<Modulo>,
-        inv: Vec<Modulo>,
+        factorial: Vec<ModInt>,
+        factorial_inv: Vec<ModInt>,
+        inv: Vec<ModInt>,
     }
 
     impl ModuloUtils {
         pub fn new() -> ModuloUtils {
             ModuloUtils {
-                factorial: vec![Modulo::from(1), Modulo::from(1)],
-                factorial_inv: vec![Modulo::from(1), Modulo::from(1)],
-                inv: vec![Modulo::from(0), Modulo::from(1)],
+                factorial: vec![ModInt::from(1), ModInt::from(1)],
+                factorial_inv: vec![ModInt::from(1), ModInt::from(1)],
+                inv: vec![ModInt::from(0), ModInt::from(1)],
             }
         }
 
         // when MODULO is prime
-        pub fn binom_coef(&mut self, n: usize, k: usize) -> Modulo {
+        pub fn binom_coef(&mut self, n: usize, k: usize) -> ModInt {
             if n < k {
-                return Modulo::from(0);
+                return ModInt::from(0);
             }
 
             let len = self.factorial.len();
             if len < n + 1 {
                 for i in len..(n + 1) {
                     let prev = *self.factorial.last().unwrap();
-                    self.factorial.push(prev * Modulo::from(i));
+                    self.factorial.push(prev * ModInt::from(i));
 
-                    let inv_i = -self.inv[MODULO % i] * Modulo::from(MODULO / i);
+                    let inv_i = -self.inv[MODULO % i] * ModInt::from(MODULO / i);
                     self.inv.push(inv_i);
 
                     let prev = *self.factorial_inv.last().unwrap();
@@ -181,43 +181,43 @@ mod modulo {
 //
 //     #[test]
 //     fn eq() {
-//         assert_eq!(Modulo::from(1), Modulo::from((1 + MODULO) as isize));
+//         assert_eq!(ModInt::from(1), ModInt::from((1 + MODULO) as isize));
 //     }
 //
 //     #[test]
 //     fn add1() {
-//         assert_eq!(Modulo::from(1), Modulo::from(6) + Modulo::from(6));
+//         assert_eq!(ModInt::from(1), ModInt::from(6) + ModInt::from(6));
 //     }
 //
 //     #[test]
 //     fn add2() {
-//         assert_eq!(Modulo::from(0), Modulo::from(5) + Modulo::from(6));
+//         assert_eq!(ModInt::from(0), ModInt::from(5) + ModInt::from(6));
 //     }
 //
 //     #[test]
 //     fn sub1() {
-//         assert_eq!(Modulo::from(2), Modulo::from(3) - Modulo::from(1));
+//         assert_eq!(ModInt::from(2), ModInt::from(3) - ModInt::from(1));
 //     }
 //
 //     #[test]
 //     fn sub2() {
-//         assert_eq!(Modulo::from(10), Modulo::from(1) - Modulo::from(2));
+//         assert_eq!(ModInt::from(10), ModInt::from(1) - ModInt::from(2));
 //     }
 //
 //     #[test]
 //     fn mul() {
-//         assert_eq!(Modulo::from(3), Modulo::from(5) * Modulo::from(5));
+//         assert_eq!(ModInt::from(3), ModInt::from(5) * ModInt::from(5));
 //     }
 //
 //     #[test]
 //     fn pow() {
-//         assert_eq!(Modulo::from(5), Modulo::from(7).pow(2));
+//         assert_eq!(ModInt::from(5), ModInt::from(7).pow(2));
 //     }
 //
 //     #[test]
 //     fn inv() {
-//         assert_eq!(Modulo::from(1), Modulo::from(2) * Modulo::from(2).inv());
-//         assert_eq!(Modulo::from(1), Modulo::from(3) * Modulo::from(3).inv());
+//         assert_eq!(ModInt::from(1), ModInt::from(2) * ModInt::from(2).inv());
+//         assert_eq!(ModInt::from(1), ModInt::from(3) * ModInt::from(3).inv());
 //     }
 //
 //     #[test]
@@ -236,9 +236,9 @@ mod modulo {
 //     #[test]
 //     fn binom_coef() {
 //         let mut modulo_utils = ModuloUtils::new();
-//         assert_eq!(Modulo::from(6), modulo_utils.binom_coef(4, 2));
-//         assert_eq!(Modulo::from(3), modulo_utils.binom_coef(3, 1));
-//         assert_eq!(Modulo::from(1), modulo_utils.binom_coef(3, 0));
-//         assert_eq!(Modulo::from(10), modulo_utils.binom_coef(5, 2));
+//         assert_eq!(ModInt::from(6), modulo_utils.binom_coef(4, 2));
+//         assert_eq!(ModInt::from(3), modulo_utils.binom_coef(3, 1));
+//         assert_eq!(ModInt::from(1), modulo_utils.binom_coef(3, 0));
+//         assert_eq!(ModInt::from(10), modulo_utils.binom_coef(5, 2));
 //     }
 // }
