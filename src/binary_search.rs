@@ -168,6 +168,10 @@ mod tests {
 
         let v2: Vec<usize> = vec![];
         assert_eq!(None, binary_search_vec_max(&v2, |x| *x <= 3));
+
+        let v3: Vec<usize> = vec![3];
+        assert_eq!(Some(0), binary_search_vec_max(&v3, |x| *x <= 3));
+        assert_eq!(None, binary_search_vec_max(&v3, |x| *x <= 2));
     }
 
     #[test]
@@ -180,5 +184,9 @@ mod tests {
 
         let v2: Vec<usize> = vec![];
         assert_eq!(None, binary_search_vec_max(&v2, |x| *x >= 3));
+
+        let v3: Vec<usize> = vec![3];
+        assert_eq!(Some(0), binary_search_vec_max(&v3, |x| *x >= 3));
+        assert_eq!(None, binary_search_vec_max(&v3, |x| *x >= 4));
     }
 }
