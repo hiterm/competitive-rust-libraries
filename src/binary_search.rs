@@ -2,7 +2,6 @@
 
 fn main() {}
 
-// TODO: binary_searchトレイトに統合する
 fn binary_search_int_max<F>(min: isize, max: isize, condition: F) -> Option<isize>
 where
     F: Fn(isize) -> bool,
