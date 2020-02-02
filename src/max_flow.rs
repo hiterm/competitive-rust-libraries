@@ -1,13 +1,4 @@
-use std::io::Write;
-
-#[allow(unused)]
-macro_rules! debug {
-    ($($format:tt)*) => (write!(std::io::stderr(), $($format)*).unwrap());
-}
-#[allow(unused)]
-macro_rules! debugln {
-    ($($format:tt)*) => (writeln!(std::io::stderr(), $($format)*).unwrap());
-}
+#![allow(unused)]
 
 fn main() {
     let (num_vertices, num_edges): (usize, usize) = {

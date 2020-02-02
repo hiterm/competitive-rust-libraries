@@ -1,4 +1,6 @@
+#![allow(unused)]
 use std::collections::{HashSet, HashMap};
+#[allow(unused_imports)]
 use std::time::Instant;
 
 fn main() {

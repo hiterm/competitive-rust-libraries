@@ -16,9 +16,9 @@ fn main() {
 }
 
 mod modulo {
-    use std::ops::{Add, Mul, Sub, Neg};
+    use std::ops::{Add, Mul, Neg, Sub};
 
-    const MODULO: usize = 1_000_000_007;
+    pub const MODULO: usize = 1_000_000_007;
     // const MODULO: usize = 11;
 
     fn positive_rem(a: isize, b: usize) -> usize {
@@ -32,7 +32,8 @@ mod modulo {
     }
 
     /// Return (x, y) s.t. ax + by = d where d = gcd(a, b)
-    fn ext_gcd(a: usize, b: usize) -> (isize, isize) {
+    #[allow(unused)]
+    pub fn ext_gcd(a: usize, b: usize) -> (isize, isize) {
         if b == 0 {
             return (1, 0);
         }
@@ -84,11 +85,11 @@ mod modulo {
         }
 
         // when MODULO is prime
+        #[allow(unused)]
         pub fn inv(self) -> Modulo {
             let (x, _) = ext_gcd(self.0 as usize, MODULO as usize);
             Modulo::from(x)
         }
-
     }
 
     impl Add for Modulo {
@@ -159,7 +160,7 @@ mod modulo {
                     let prev = *self.factorial.last().unwrap();
                     self.factorial.push(prev * Modulo::from(i));
 
-                    let inv_i = - self.inv[MODULO % i] * Modulo::from(MODULO / i);
+                    let inv_i = -self.inv[MODULO % i] * Modulo::from(MODULO / i);
                     self.inv.push(inv_i);
 
                     let prev = *self.factorial_inv.last().unwrap();
