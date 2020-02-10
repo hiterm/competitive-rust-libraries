@@ -1,4 +1,4 @@
-use modulo::ModInt;
+use modint::ModInt;
 
 fn main() {
     println!("{:?}", ModInt::from(5) + ModInt::from(6));
@@ -10,7 +10,7 @@ fn main() {
     println!("{:?}", ModInt::from(2).inv());
     println!("{:?}", ModInt::from(3).inv());
 
-    let mut modulo_utils = modulo::ModuloUtils::new();
+    let mut modulo_utils = modint::ModIntUtil::new();
     println!("{:?}", modulo_utils.binom_coef(4, 2));
     println!("{:?}", modulo_utils);
 
@@ -25,7 +25,7 @@ fn main() {
     println!("{:?}", a);
 }
 
-mod modulo {
+mod modint {
     use std::ops::{Add, Mul, Neg, Sub, AddAssign, MulAssign, SubAssign};
 
     pub const MODULO: usize = 1_000_000_007;
@@ -78,6 +78,7 @@ mod modulo {
     }
 
     impl ModInt {
+        #[allow(unused)]
         pub fn pow(self, p: usize) -> ModInt {
             if self == ModInt::from(0) {
                 return ModInt::from(0);
@@ -161,15 +162,15 @@ mod modulo {
     impl Eq for ModInt {}
 
     #[derive(Debug)]
-    pub struct ModuloUtils {
+    pub struct ModIntUtil {
         factorial: Vec<ModInt>,
         factorial_inv: Vec<ModInt>,
         inv: Vec<ModInt>,
     }
 
-    impl ModuloUtils {
-        pub fn new() -> ModuloUtils {
-            ModuloUtils {
+    impl ModIntUtil {
+        pub fn new() -> ModIntUtil {
+            ModIntUtil {
                 factorial: vec![ModInt::from(1), ModInt::from(1)],
                 factorial_inv: vec![ModInt::from(1), ModInt::from(1)],
                 inv: vec![ModInt::from(0), ModInt::from(1)],
