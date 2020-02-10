@@ -8,8 +8,8 @@ name = "number_theory"
 path = "src/number_theory.rs"
 
 [[bin]]
-name = "modulo"
-path = "src/modulo.rs"
+name = "modint"
+path = "src/modint.rs"
 
 [[bin]]
 name = "graph"
