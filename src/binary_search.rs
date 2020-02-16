@@ -6,6 +6,10 @@ fn binary_search_int_max<F>(min: isize, max: isize, condition: F) -> Option<isiz
 where
     F: Fn(isize) -> bool,
 {
+    if max < min {
+        return None;
+    }
+
     if condition(max) {
         return Some(max);
     }
@@ -32,6 +36,10 @@ fn binary_search_int_min<F>(min: isize, max: isize, condition: F) -> Option<isiz
 where
     F: Fn(isize) -> bool,
 {
+    if max < min {
+        return None;
+    }
+
     if condition(min) {
         return Some(min);
     }
