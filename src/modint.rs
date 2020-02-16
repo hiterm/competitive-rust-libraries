@@ -26,10 +26,10 @@ fn main() {
 }
 
 mod modint {
-    use std::ops::{Add, Mul, Neg, Sub, AddAssign, MulAssign, SubAssign};
+    use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
     pub const MODULO: usize = 1_000_000_007;
-    // const MODULO: usize = 11;
+    // pub const MODULO: usize = 11;
 
     fn positive_rem(a: isize, b: usize) -> usize {
         let b = b as isize;
@@ -178,13 +178,7 @@ mod modint {
             }
         }
 
-        // when MODULO is prime
-        #[allow(unused)]
-        pub fn binom_coef(&mut self, n: usize, k: usize) -> ModInt {
-            if n < k {
-                return ModInt::from(0);
-            }
-
+        fn calc_cache(&mut self, n: usize) {
             let len = self.factorial.len();
             if len < n + 1 {
                 for i in len..(n + 1) {
@@ -198,17 +192,53 @@ mod modint {
                     self.factorial_inv.push(prev * self.inv[i]);
                 }
             }
+        }
+
+        #[allow(unused)]
+        pub fn factorial(&mut self, n: usize) -> ModInt {
+            self.calc_cache(n);
+            self.factorial[n]
+        }
+
+        #[allow(unused)]
+        pub fn factorial_inv(&mut self, n: usize) -> ModInt {
+            self.calc_cache(n);
+            self.factorial_inv[n]
+        }
+
+        // when MODULO is prime
+        #[allow(unused)]
+        pub fn binom_coef(&mut self, n: usize, k: usize) -> ModInt {
+            if n < k {
+                return ModInt::from(0);
+            }
+
+            self.calc_cache(n);
             self.factorial[n] * self.factorial_inv[k] * self.factorial_inv[n - k]
+        }
+
+        // Not tested!!
+        #[allow(unused)]
+        pub fn multi_coef(&mut self, v: &[usize]) -> ModInt {
+            let n = v.iter().sum();
+            self.calc_cache(n);
+
+            let mut ret = ModInt::from(1);
+            ret *= self.factorial[n];
+            for v_i in v {
+                ret *= self.factorial_inv[*v_i];
+            }
+
+            ret
         }
     }
 }
-
 
 // Tests for MODULO = 11
 //
 // #[cfg(test)]
 // mod tests {
-//     use modulo::*;
+//     use modint::*;
 //
 //     #[test]
 //     fn eq() {
@@ -266,10 +296,10 @@ mod modint {
 //
 //     #[test]
 //     fn binom_coef() {
-//         let mut modulo_utils = ModuloUtils::new();
-//         assert_eq!(ModInt::from(6), modulo_utils.binom_coef(4, 2));
-//         assert_eq!(ModInt::from(3), modulo_utils.binom_coef(3, 1));
-//         assert_eq!(ModInt::from(1), modulo_utils.binom_coef(3, 0));
-//         assert_eq!(ModInt::from(10), modulo_utils.binom_coef(5, 2));
+//         let mut modint_util = ModIntUtil::new();
+//         assert_eq!(ModInt::from(6), modint_util.binom_coef(4, 2));
+//         assert_eq!(ModInt::from(3), modint_util.binom_coef(3, 1));
+//         assert_eq!(ModInt::from(1), modint_util.binom_coef(3, 0));
+//         assert_eq!(ModInt::from(10), modint_util.binom_coef(5, 2));
 //     }
 // }
