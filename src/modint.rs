@@ -169,6 +169,7 @@ mod modint {
     }
 
     impl ModIntUtil {
+        #[allow(unused)]
         pub fn new() -> ModIntUtil {
             ModIntUtil {
                 factorial: vec![ModInt::from(1), ModInt::from(1)],
@@ -178,6 +179,7 @@ mod modint {
         }
 
         // when MODULO is prime
+        #[allow(unused)]
         pub fn binom_coef(&mut self, n: usize, k: usize) -> ModInt {
             if n < k {
                 return ModInt::from(0);
