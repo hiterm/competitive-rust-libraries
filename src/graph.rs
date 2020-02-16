@@ -101,6 +101,32 @@ fn bfs(start: usize, graph_list: &[Vec<usize>]) {
     }
 }
 
+// Not tested!!
+// closureを受け取る幅優先探索
+fn bfs_closure<F>(start: usize, graph_list: &[Vec<usize>], mut func: F)
+where
+    F: FnMut(usize, usize)
+{
+    let n = graph_list.len();
+
+    let mut visited = vec![false; n];
+    let mut queue: VecDeque<usize> = VecDeque::new();
+
+    visited[start] = true;
+    queue.push_back(start);
+
+    while !queue.is_empty() {
+        let vertex = queue.pop_front().unwrap();
+        for &next in &graph_list[vertex] {
+            if !visited[next] {
+                func(vertex, next);
+                visited[next] = true;
+                queue.push_back(next);
+            }
+        }
+    }
+}
+
 // 深さ優先探索
 fn dfs(start: usize, graph_list: &[Vec<usize>]) {
     let n = graph_list.len();
@@ -139,6 +165,31 @@ fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
     for &next in &graph_list[start] {
         if !visited[next] {
             dfs_aux(next, &graph_list, visited);
+        }
+    }
+}
+
+// クロージャを受け取るdfs
+fn dfs_closure<F>(current: usize, graph_list: &[Vec<usize>], mut func: F)
+where
+    F: FnMut(usize, usize)
+{
+    let n = graph_list.len();
+    let mut visited = vec![false; n];
+
+    dfs_closure_aux(current, graph_list, &mut visited, &mut func);
+}
+// 補助関数
+fn dfs_closure_aux<F>(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>, func: &mut F)
+where
+    F: FnMut(usize, usize)
+{
+    visited[start] = true;
+
+    for &next in &graph_list[start] {
+        if !visited[next] {
+            func(start, next);
+            dfs_closure_aux(next, &graph_list, visited, func);
         }
     }
 }
