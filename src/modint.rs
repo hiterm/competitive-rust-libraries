@@ -217,6 +217,14 @@ mod modint {
             self.factorial[n] * self.factorial_inv[k] * self.factorial_inv[n - k]
         }
 
+        #[allow(unused)]
+        fn perm(&mut self, n: usize, k: usize) -> ModInt {
+            if n < k {
+                return ModInt::from(0);
+            }
+            self.factorial(n) * self.factorial_inv(n - k)
+        }
+
         // Not tested!!
         #[allow(unused)]
         pub fn multi_coef(&mut self, v: &[usize]) -> ModInt {

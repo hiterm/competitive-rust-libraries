@@ -101,7 +101,6 @@ fn bfs(start: usize, graph_list: &[Vec<usize>]) {
     }
 }
 
-// Not tested!!
 // closureを受け取る幅優先探索
 fn bfs_closure<F>(start: usize, graph_list: &[Vec<usize>], mut func: F)
 where
