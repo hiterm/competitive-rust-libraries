@@ -3,32 +3,4 @@ name = "rust_libraries"
 version = "0.1.0"
 authors = ["htlsne <htlsne23@gmail.com>"]
 
-[[bin]]
-name = "number_theory"
-path = "src/number_theory.rs"
-
-[[bin]]
-name = "modint"
-path = "src/modint.rs"
-
-[[bin]]
-name = "graph"
-path = "src/graph.rs"
-
-[[bin]]
-name = "iter"
-path = "src/iter.rs"
-
-[[bin]]
-name = "max_flow"
-path = "src/max_flow.rs"
-
-[[bin]]
-name = "binary_search"
-path = "src/binary_search.rs"
-
-[[bin]]
-name = "integer"
-path = "src/integer.rs"
-
 [dependencies]
