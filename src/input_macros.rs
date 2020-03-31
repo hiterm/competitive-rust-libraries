@@ -22,8 +22,8 @@ macro_rules! getl_vec {
 }
 
 fn main() {
-    let (a, b) = getl(usize, usize);
-    let v = getl_vec(usize);
+    let (a, b) = getl!(usize, usize);
+    let v = getl_vec!(usize);
     println!("{} {}", a, b);
     println!("{:?}", v);
 }
