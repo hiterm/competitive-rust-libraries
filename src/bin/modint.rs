@@ -28,58 +28,67 @@ fn main() {
 mod modint {
     use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-    pub const MODULO: usize = 1_000_000_007;
-    // pub const MODULO: usize = 11;
+    pub const MODULO: u64 = 1_000_000_007;
+    // pub const MODULO: u64 = 11;
 
-    fn positive_rem(a: isize, b: usize) -> usize {
-        let b = b as isize;
+    fn positive_rem(a: i64, b: u64) -> u64 {
+        let b = b as i64;
         let mut value = a % b;
         if value < 0 {
             value += b;
         }
-        // TODO: TryFrom
-        value as usize
+        value as u64
     }
 
     /// Return (x, y) s.t. ax + by = d where d = gcd(a, b)
     #[allow(unused)]
-    pub fn ext_gcd(a: usize, b: usize) -> (isize, isize) {
+    pub fn ext_gcd(a: u64, b: u64) -> (i64, i64) {
         if b == 0 {
             return (1, 0);
         }
 
-        let q = (a / b) as isize;
+        let q = (a / b) as i64;
         let r = a % b;
         let (x1, y1) = ext_gcd(b, r);
         (y1, x1 - q * y1)
     }
 
     #[derive(Debug, Copy, Clone)]
-    pub struct ModInt(pub usize);
+    pub struct ModInt(pub u64);
 
     impl From<usize> for ModInt {
         fn from(n: usize) -> ModInt {
-            ModInt(n % MODULO)
+            ModInt(n as u64 % MODULO)
         }
     }
 
     impl From<isize> for ModInt {
         fn from(n: isize) -> ModInt {
-            // TODO: use TryFrom
-            ModInt(positive_rem(n, MODULO as usize))
+            ModInt(positive_rem(n as i64, MODULO as u64))
+        }
+    }
+
+    impl From<u64> for ModInt {
+        fn from(n: u64) -> ModInt {
+            ModInt(positive_rem(n as i64, MODULO as u64))
+        }
+    }
+
+    impl From<i64> for ModInt {
+        fn from(n: i64) -> ModInt {
+            ModInt(positive_rem(n, MODULO as u64))
         }
     }
 
     impl From<i32> for ModInt {
         fn from(n: i32) -> ModInt {
-            // TODO: use TryFrom
-            ModInt(positive_rem(n as isize, MODULO as usize))
+            ModInt(positive_rem(n as i64, MODULO as u64))
         }
     }
 
     impl ModInt {
         #[allow(unused)]
-        pub fn pow(self, p: usize) -> ModInt {
+        pub fn pow(self, p: u64) -> ModInt {
             if self == ModInt::from(0) {
                 return ModInt::from(0);
             }
@@ -98,7 +107,7 @@ mod modint {
         // when MODULO is prime
         #[allow(unused)]
         pub fn inv(self) -> ModInt {
-            let (x, _) = ext_gcd(self.0 as usize, MODULO as usize);
+            let (x, _) = ext_gcd(self.0 as u64, MODULO as u64);
             ModInt::from(x)
         }
     }
@@ -115,7 +124,7 @@ mod modint {
         type Output = ModInt;
 
         fn sub(self, other: ModInt) -> ModInt {
-            ModInt::from(self.0 as isize - other.0 as isize)
+            ModInt::from(self.0 as i64 - other.0 as i64)
         }
     }
 
@@ -185,7 +194,7 @@ mod modint {
                     let prev = *self.factorial.last().unwrap();
                     self.factorial.push(prev * ModInt::from(i));
 
-                    let inv_i = -self.inv[MODULO % i] * ModInt::from(MODULO / i);
+                    let inv_i = -self.inv[MODULO as usize % i] * ModInt::from(MODULO as usize / i);
                     self.inv.push(inv_i);
 
                     let prev = *self.factorial_inv.last().unwrap();
@@ -243,7 +252,7 @@ mod modint {
 }
 
 // Tests for MODULO = 11
-//
+
 // #[cfg(test)]
 // mod tests {
 //     use modint::*;
@@ -291,14 +300,14 @@ mod modint {
 //
 //     #[test]
 //     fn ext_gcd_test() {
-//         let a = 12isize;
-//         let b = 18isize;
-//         let (x, y) = ext_gcd(a as usize, b as usize);
+//         let a = 12i64;
+//         let b = 18i64;
+//         let (x, y) = ext_gcd(a as u64, b as u64);
 //         assert_eq!(6, a * x + b * y);
 //
-//         let a = 4isize;
-//         let b = 12isize;
-//         let (x, y) = ext_gcd(a as usize, b as usize);
+//         let a = 4i64;
+//         let b = 12i64;
+//         let (x, y) = ext_gcd(a as u64, b as u64);
 //         assert_eq!(4, a * x + b * y);
 //     }
 //
