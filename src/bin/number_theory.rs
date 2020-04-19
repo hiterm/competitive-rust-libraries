@@ -42,18 +42,18 @@ fn gcd(a: usize, b: usize) -> usize {
     }
 }
 
-fn prime_sieve(n: usize) -> Vec<usize> {
-    let mut table: Vec<usize> = vec![0; (n + 1) as usize];
-    let mut primes: Vec<usize> = Vec::new();
+fn prime_sieve(n: usize) -> Vec<u64> {
+    let mut table: Vec<u64> = vec![0; n + 1];
+    let mut primes: Vec<u64> = Vec::new();
 
-    for i in 2..(n+1) {
-        if table[i as usize] == 0 {
-            primes.push(i);
+    for i in 2..=n {
+        if table[i] == 0 {
+            primes.push(i as u64);
             for j in 2..n {
                 if i * j > n {
                     break
                 }
-                table[(i * j) as usize] = 1
+                table[i * j] = 1
             }
         }
     }
@@ -61,16 +61,15 @@ fn prime_sieve(n: usize) -> Vec<usize> {
     primes
 }
 
-fn prime_factor(n: usize) -> HashMap<usize, usize> {
-    let mut factors = HashMap::new();
-
-    let primes = prime_sieve((n as f64).sqrt() as usize);
+fn prime_factor(n: u64) -> HashMap<u64, u64> {
+    let sqrt = (n as f64).sqrt() as u64;
     let mut rest = n;
-    for p in primes {
-        while rest % p == 0 {
-            let count = factors.entry(p).or_insert(0);
+    let mut factors = HashMap::new();
+    for d in 2..=sqrt {
+        while rest % d == 0 {
+            let count = factors.entry(d).or_insert(0);
             *count += 1;
-            rest /= p;
+            rest /= d;
         }
     }
     if rest != 1 {
@@ -80,27 +79,18 @@ fn prime_factor(n: usize) -> HashMap<usize, usize> {
     factors
 }
 
-fn divisors_vec(n: usize) -> Vec<usize> {
+fn divisors_vec(n: u64) -> Vec<u64> {
     prime_factor(n).iter().fold(vec![1], |acc, (&p, &pow)| {
-        (0..(pow + 1)).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
+        (0..=pow).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
     })
 }
 
-fn divisors_set(n: usize) -> HashSet<usize> {
+fn divisors_set(n: u64) -> HashSet<u64> {
     let mut set = HashSet::new();
     set.insert(1);
 
-    // 素朴な実装
-    // for (p, pow) in prime_factor(n) {
-    //     let set_prev = set.clone();
-    //     for i in 1..=pow {
-    //         set.extend(set_prev.iter().map(|a| a * p.pow(i as u32)));
-    //     }
-    // }
-
-    // iterator使用
     prime_factor(n).iter().fold(set, |acc, (&p, &pow)| {
-        (0..(pow + 1)).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
+        (0..=pow).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
     })
 }
 
@@ -114,7 +104,7 @@ fn binom_coef(n: usize, k: usize) -> usize {
     }
 
     let mut ret = 1;
-    for i in 1..(k + 1) {
+    for i in 1..=k {
         ret = ret * (n - k + i) / i
     }
     ret
