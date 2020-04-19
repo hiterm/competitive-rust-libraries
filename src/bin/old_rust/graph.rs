@@ -1,4 +1,15 @@
 use std::collections::BinaryHeap;
+use std::collections::VecDeque;
+use std::io::Write;
+
+#[allow(unused)]
+macro_rules! debug {
+    ($($format:tt)*) => (write!(std::io::stderr(), $($format)*).unwrap());
+}
+#[allow(unused)]
+macro_rules! debugln {
+    ($($format:tt)*) => (writeln!(std::io::stderr(), $($format)*).unwrap());
+}
 
 fn main() {
     let n = 4;
@@ -12,7 +23,7 @@ fn main() {
         vec![1, 0, 0, 0],
         vec![0, 1, 0, 0],
     ];
-    eprintln!("{:?}", graph_mat);
+    debugln!("{:?}", graph_mat);
 
     let mut graph_list = vec![vec![]; n];
     for i in 0..n {
@@ -22,7 +33,7 @@ fn main() {
             }
         }
     }
-    eprintln!("{:?}", graph_list);
+    debugln!("{:?}", graph_list);
 
     println!("start bfs");
     bfs(0, &graph_list);
@@ -70,8 +81,6 @@ fn main() {
 
 // 幅優先探索
 fn bfs(start: usize, graph_list: &[Vec<usize>]) {
-    use std::collections::VecDeque;
-
     let n = graph_list.len();
 
     let mut visited = vec![false; n];
@@ -82,7 +91,7 @@ fn bfs(start: usize, graph_list: &[Vec<usize>]) {
 
     while !queue.is_empty() {
         let vertex = queue.pop_front().unwrap();
-        eprintln!("visit {}", vertex);
+        debugln!("visit {}", vertex);
         for &next in &graph_list[vertex] {
             if !visited[next] {
                 visited[next] = true;
@@ -97,8 +106,6 @@ fn bfs_closure<F>(start: usize, graph_list: &[Vec<usize>], mut func: F)
 where
     F: FnMut(usize, usize)
 {
-    use std::collections::VecDeque;
-
     let n = graph_list.len();
 
     let mut visited = vec![false; n];
@@ -131,7 +138,7 @@ fn dfs(start: usize, graph_list: &[Vec<usize>]) {
 
     while !stack.is_empty() {
         let vertex = stack.pop().unwrap();
-        eprintln!("visit {}", vertex);
+        debugln!("visit {}", vertex);
         for &next in &graph_list[vertex] {
             if !visited[next] {
                 visited[next] = true;
@@ -152,7 +159,7 @@ fn dfs_recursive(start: usize, graph_list: &[Vec<usize>]) {
 fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
     visited[start] = true;
 
-    eprintln!("visit {}", start);
+    debugln!("visit {}", start);
 
     for &next in &graph_list[start] {
         if !visited[next] {
@@ -186,10 +193,24 @@ where
     }
 }
 
+// 古いRust向けの標準と同じ機能を持つReverse
+#[derive(PartialEq, Eq, Debug)]
+struct Reverse<T>(T);
+
+impl<T: Ord> Ord for Reverse<T> {
+    fn cmp(&self, other: &Reverse<T>) -> std::cmp::Ordering {
+        self.0.cmp(&other.0).reverse()
+    }
+}
+
+impl<T: PartialOrd> PartialOrd for Reverse<T> {
+    fn partial_cmp(&self, other: &Reverse<T>) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0).map(|a| a.reverse())
+    }
+}
+
 // ダイクストラ法。辺の長さがすべて1の場合。
 fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
-    use std::cmp::Reverse;
-
     let n = graph_list.len();
     let mut distances = vec![std::usize::MAX >> 2; n];
     distances[start] = 0;
@@ -203,10 +224,10 @@ fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
 
     while !queue.is_empty() {
         let Reverse((d, u)) = queue.pop().unwrap();
-        eprintln!("u: {}", u);
-        eprintln!("distances: {:?}", distances);
+        debugln!("u: {}", u);
+        debugln!("distances: {:?}", distances);
         for &v in &graph_list[u] {
-            eprintln!("v: {}", v);
+            debugln!("v: {}", v);
             let alt = d + 1;
             if distances[v] > alt {
                 distances[v] = alt;
