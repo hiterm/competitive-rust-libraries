@@ -1,5 +1,3 @@
-use std::collections::BinaryHeap;
-
 fn main() {
     let n = 4;
     // graph shape:
@@ -189,6 +187,7 @@ where
 // ダイクストラ法。辺の長さがすべて1の場合。
 fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
     use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
 
     let n = graph_list.len();
     let mut distances = vec![std::usize::MAX >> 2; n];
