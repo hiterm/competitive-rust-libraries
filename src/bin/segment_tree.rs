@@ -50,6 +50,10 @@ where
         }
     }
 
+    fn get(&self, k: usize) -> T {
+        self.data[k + self.len - 1]
+    }
+
     fn query(&self, a: usize, b: usize) -> T {
         self.process_query(a, b, 0, 0, self.len)
     }
