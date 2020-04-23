@@ -2,15 +2,22 @@ fn main() {
 
 }
 
-struct SegmentTree {
+struct SegmentTree<T, F> {
     len: usize,
-    data: Vec<u64>,
+    data: Vec<T>,
+    operator: F,
+    unit: T,
 }
 
-impl SegmentTree {
-    const INF: u64 = std::u64::MAX >> 2;
+impl<T, F> SegmentTree<T, F>
+where
+    F: Fn(T, T) -> T + Copy,
+    T: Clone + Copy,
+{
+    // const INF: u64 = std::u64::MAX >> 2;
 
-    fn new(n: usize) -> SegmentTree {
+    fn new(v: &Vec<T>, operator: F, unit: T) -> SegmentTree<T, F> {
+        let n = v.len();
         let mut len = 1;
         while len < n {
             len *= 2;
@@ -18,35 +25,38 @@ impl SegmentTree {
 
         let mut segtree = SegmentTree {
             len: len,
-            data: vec![],
+            data: vec![unit; 2 * len - 1],
+            operator,
+            unit,
         };
 
-        for _ in 0..(2 * len - 1) {
-            segtree.data.push(SegmentTree::INF);
+        for i in 0..n {
+            segtree.data[i + segtree.len - 1] = v[i];
+        }
+        for i in (0..(segtree.len - 1)).rev() {
+            segtree.data[i] = operator(segtree.data[2 * i + 1], segtree.data[2 * i + 2]);
         }
 
         segtree
     }
 
-    fn update(&mut self, k: usize, a: u64) {
-        use std::cmp::min;
-
+    fn update(&mut self, k: usize, a: T) {
         let data = &mut self.data;
         let mut k = k + self.len - 1;
         data[k] = a;
         while k > 0 {
             k = (k - 1) / 2;
-            data[k] = min(data[k * 2 + 1], data[k * 2 + 2]);
+            data[k] = (self.operator)(data[k * 2 + 1], data[k * 2 + 2]);
         }
     }
 
-    fn query(&self, a: usize, b: usize) -> u64 {
+    fn query(&self, a: usize, b: usize) -> T {
         self.process_query(a, b, 0, 0, self.len)
     }
 
-    fn process_query(&self, a: usize, b: usize, k: usize, l: usize, r: usize) -> u64 {
+    fn process_query(&self, a: usize, b: usize, k: usize, l: usize, r: usize) -> T {
         if r <= a || b <= l {
-            return SegmentTree::INF;
+            return self.unit;
         }
 
         if a <= l && r <= b {
@@ -54,7 +64,7 @@ impl SegmentTree {
         } else {
             let vl = self.process_query(a, b, k * 2 + 1, l, (l + r) / 2);
             let vr = self.process_query(a, b, k * 2 + 2, (l + r) / 2, r);
-            std::cmp::min(vl, vr)
+            (self.operator)(vl, vr)
         }
     }
 }
