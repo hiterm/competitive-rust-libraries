@@ -50,7 +50,11 @@ fn main() {
 
 // TODO: indexの範囲チェック
 
-struct SegmentTree<T, F> {
+struct SegmentTree<T, F>
+where
+    F: Fn(T, T) -> T,
+    T: Clone + Copy,
+{
     len: usize,
     data: Vec<T>,
     operator: F,
