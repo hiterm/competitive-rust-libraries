@@ -55,7 +55,7 @@ mod lca {
         segtree: SegmentTree<Option<usize>>,
     }
 
-    impl<'a> Lca {
+    impl Lca {
         pub fn new(root: usize, graph: &Vec<Vec<usize>>) -> Lca {
             let n = graph.len();
             let mut k = 0;
