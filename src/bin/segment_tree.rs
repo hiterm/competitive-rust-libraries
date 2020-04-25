@@ -1,6 +1,54 @@
-fn main() {
-
+//{{{
+#[allow(unused_macros)]
+macro_rules! getl {
+    ( $( $t:ty ),* ) => {
+        {
+            let mut s = String::new();
+            std::io::stdin().read_line(&mut s).unwrap();
+            let s = s.trim_end();
+            let mut ws = s.split_whitespace();
+            ($(ws.next().unwrap().parse::<$t>().unwrap()),*)
+        }
+    };
 }
+
+#[allow(unused_macros)]
+macro_rules! getl_vec {
+    ( $t:ty ) => {{
+        let mut s = String::new();
+        std::io::stdin().read_line(&mut s).unwrap();
+        let s = s.trim_end();
+        s.split_whitespace()
+            .map(|x| x.parse().unwrap())
+            .collect::<Vec<$t>>()
+    }};
+}
+//}}}
+
+const INF: u64 = (1 << 31) - 1;
+
+fn main() {
+    const UPDATE: u64 = 0;
+    const FIND: u64 = 1;
+
+    let (n, q) = getl!(usize, usize);
+    let mut queries = vec![];
+    for _ in 0..q {
+        queries.push(getl!(u64, u64, u64));
+    }
+
+    let mut segtree = SegmentTree::new(&vec![INF; n], std::cmp::min, INF);
+    for (ty, a, b) in queries {
+        if ty == UPDATE {
+            segtree.update(a as usize, b);
+        } else {
+            let ans = segtree.query(a as usize, b as usize + 1);
+            println!("{}", ans);
+        }
+    }
+}
+
+// TODO: indexの範囲チェック
 
 struct SegmentTree<T, F> {
     len: usize,
@@ -11,11 +59,9 @@ struct SegmentTree<T, F> {
 
 impl<T, F> SegmentTree<T, F>
 where
-    F: Fn(T, T) -> T + Copy,
+    F: Fn(T, T) -> T,
     T: Clone + Copy,
 {
-    // const INF: u64 = std::u64::MAX >> 2;
-
     fn new(v: &Vec<T>, operator: F, unit: T) -> SegmentTree<T, F> {
         let n = v.len();
         let mut len = 1;
@@ -34,12 +80,13 @@ where
             segtree.data[i + segtree.len - 1] = v[i];
         }
         for i in (0..(segtree.len - 1)).rev() {
-            segtree.data[i] = operator(segtree.data[2 * i + 1], segtree.data[2 * i + 2]);
+            segtree.data[i] = (segtree.operator)(segtree.data[2 * i + 1], segtree.data[2 * i + 2]);
         }
 
         segtree
     }
 
+    #[allow(unused)]
     fn update(&mut self, k: usize, a: T) {
         let data = &mut self.data;
         let mut k = k + self.len - 1;
@@ -50,6 +97,7 @@ where
         }
     }
 
+    #[allow(unused)]
     fn get(&self, k: usize) -> T {
         self.data[k + self.len - 1]
     }
