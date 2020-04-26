@@ -2,6 +2,8 @@
 
 fn main() {}
 
+// TODO: Rangeのメソッドにする
+
 fn binary_search_int_max<F>(min: isize, max: isize, condition: F) -> Option<isize>
 where
     F: Fn(isize) -> bool,
@@ -62,88 +64,70 @@ where
     Some(right)
 }
 
-// TODO: トレイトにしてメソッド化する
-fn binary_search_vec_max<T, F>(v: &[T], condition: F) -> Option<usize>
+trait BinarySearch<T, F> {
+    fn binary_search_right(&self, condition: F) -> Option<usize>;
+    fn binary_search_left(&self, condition: F) -> Option<usize>;
+}
+
+impl<T, F> BinarySearch<T, F> for Vec<T>
 where
     F: Fn(&T) -> bool,
 {
-    if v.is_empty() {
-        return None;
-    }
-
-    let len = v.len();
-    if condition(&v[len - 1]) {
-        return Some(len - 1);
-    }
-    if !condition(&v[0]) {
-        return None;
-    }
-
-    let mut left = 0;
-    let mut right = len - 1;
-    while left + 1 < right {
-        let mid = (left + right) / 2;
-        if condition(&v[mid]) {
-            left = mid;
-        } else {
-            right = mid;
+    fn binary_search_right(&self, condition: F) -> Option<usize> {
+        if self.is_empty() {
+            return None;
         }
-    }
 
-    Some(left)
-}
-
-fn binary_search_vec_min<T, F>(v: &[T], condition: F) -> Option<usize>
-where
-    F: Fn(&T) -> bool,
-{
-    if v.is_empty() {
-        return None;
-    }
-
-    let len = v.len();
-
-    if condition(&v[0]) {
-        return Some(0);
-    }
-    if !condition(&v[len - 1]) {
-        return None;
-    }
-
-    let mut left = 0;
-    let mut right = len - 1;
-    while left + 1 < right {
-        let mid = (left + right) / 2;
-        if condition(&v[mid]) {
-            right = mid;
-        } else {
-            left = mid;
+        let len = self.len();
+        if condition(&self[len - 1]) {
+            return Some(len - 1);
         }
+        if !condition(&self[0]) {
+            return None;
+        }
+
+        let mut left = 0;
+        let mut right = len - 1;
+        while left + 1 < right {
+            let mid = (left + right) / 2;
+            if condition(&self[mid]) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+
+        Some(left)
     }
 
-    Some(right)
-}
+    fn binary_search_left(&self, condition: F) -> Option<usize> {
+        if self.is_empty() {
+            return None;
+        }
 
-// trait BinarySearch {
-//     type U;
-//
-//     fn binary_search_max<F>(&self, f: F) -> usize
-//         where F: Fn(U) -> bool;
-//     fn binary_search_min<F>(&self, f: F) -> usize;
-// }
-//
-// impl Vec {
-//     fn binary_search_max<F>(&self, f: F) -> usize
-//     {
-//         let len = self.len();
-//         let mut left = 0;
-//         let mut right = len - 1;
-//
-//         right
-//     }
-//
-//     fn binary_search_min() -> usize {}
-// }
+        let len = self.len();
+
+        if condition(&self[0]) {
+            return Some(0);
+        }
+        if !condition(&self[len - 1]) {
+            return None;
+        }
+
+        let mut left = 0;
+        let mut right = len - 1;
+        while left + 1 < right {
+            let mid = (left + right) / 2;
+            if condition(&self[mid]) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+        }
+
+        Some(right)
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -166,34 +150,34 @@ mod tests {
     }
 
     #[test]
-    fn binary_search_vec_max_test() {
+    fn binary_search_right_test() {
         let v1 = vec![0, 1, 2, 3, 4, 5];
-        assert_eq!(Some(3), binary_search_vec_max(&v1, |x| *x <= 3));
-        assert_eq!(Some(0), binary_search_vec_max(&v1, |x| *x <= 0));
-        assert_eq!(Some(5), binary_search_vec_max(&v1, |x| *x >= 0));
-        assert_eq!(None, binary_search_vec_max(&v1, |x| *x >= 100));
+        assert_eq!(Some(3), v1.binary_search_right(|x| *x <= 3));
+        assert_eq!(Some(0), v1.binary_search_right(|x| *x <= 0));
+        assert_eq!(Some(5), v1.binary_search_right(|x| *x >= 0));
+        assert_eq!(None, v1.binary_search_right(|x| *x >= 100));
 
         let v2: Vec<usize> = vec![];
-        assert_eq!(None, binary_search_vec_max(&v2, |x| *x <= 3));
+        assert_eq!(None, v2.binary_search_right(|x| *x <= 3));
 
         let v3: Vec<usize> = vec![3];
-        assert_eq!(Some(0), binary_search_vec_max(&v3, |x| *x <= 3));
-        assert_eq!(None, binary_search_vec_max(&v3, |x| *x <= 2));
+        assert_eq!(Some(0), v3.binary_search_right(|x| *x <= 3));
+        assert_eq!(None, v3.binary_search_right(|x| *x <= 2));
     }
 
     #[test]
-    fn binary_search_vec_min_test() {
+    fn binary_search_left_test() {
         let v1 = vec![0, 1, 2, 3, 4, 5];
-        assert_eq!(Some(3), binary_search_vec_min(&v1, |x| *x >= 3));
-        assert_eq!(Some(5), binary_search_vec_min(&v1, |x| *x >= 5));
-        assert_eq!(Some(0), binary_search_vec_min(&v1, |x| *x <= 5));
-        assert_eq!(None, binary_search_vec_min(&v1, |x| *x >= 100));
+        assert_eq!(Some(3), v1.binary_search_left(|x| *x >= 3));
+        assert_eq!(Some(5), v1.binary_search_left(|x| *x >= 5));
+        assert_eq!(Some(0), v1.binary_search_left(|x| *x <= 5));
+        assert_eq!(None, v1.binary_search_left(|x| *x >= 100));
 
         let v2: Vec<usize> = vec![];
-        assert_eq!(None, binary_search_vec_max(&v2, |x| *x >= 3));
+        assert_eq!(None, v2.binary_search_left(|x| *x >= 3));
 
         let v3: Vec<usize> = vec![3];
-        assert_eq!(Some(0), binary_search_vec_max(&v3, |x| *x >= 3));
-        assert_eq!(None, binary_search_vec_max(&v3, |x| *x >= 4));
+        assert_eq!(Some(0), v3.binary_search_left(|x| *x >= 3));
+        assert_eq!(None, v3.binary_search_left(|x| *x >= 4));
     }
 }
