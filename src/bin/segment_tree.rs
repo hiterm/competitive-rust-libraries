@@ -66,7 +66,7 @@ where
     F: Fn(T, T) -> T,
     T: Clone + Copy,
 {
-    fn new(v: &Vec<T>, operator: F, unit: T) -> SegmentTree<T, F> {
+    fn build(v: &Vec<T>, operator: F, unit: T) -> SegmentTree<T, F> {
         let n = v.len();
         let mut len = 1;
         while len < n {
@@ -74,7 +74,7 @@ where
         }
 
         let mut segtree = SegmentTree {
-            len: len,
+            len,
             data: vec![unit; 2 * len - 1],
             operator,
             unit,
