@@ -37,7 +37,7 @@ fn main() {
         queries.push(getl!(u64, u64, u64));
     }
 
-    let mut segtree = SegmentTree::new(&vec![INF; n], std::cmp::min, INF);
+    let mut segtree = SegmentTree::build(&vec![INF; n], std::cmp::min, INF);
     for (ty, a, b) in queries {
         if ty == UPDATE {
             segtree.update(a as usize, b);
@@ -107,10 +107,10 @@ where
     }
 
     fn query(&self, a: usize, b: usize) -> T {
-        self.process_query(a, b, 0, 0, self.len)
+        self.execute_query(a, b, 0, 0, self.len)
     }
 
-    fn process_query(&self, a: usize, b: usize, k: usize, l: usize, r: usize) -> T {
+    fn execute_query(&self, a: usize, b: usize, k: usize, l: usize, r: usize) -> T {
         if r <= a || b <= l {
             return self.unit;
         }
@@ -118,8 +118,8 @@ where
         if a <= l && r <= b {
             self.data[k]
         } else {
-            let vl = self.process_query(a, b, k * 2 + 1, l, (l + r) / 2);
-            let vr = self.process_query(a, b, k * 2 + 2, (l + r) / 2, r);
+            let vl = self.execute_query(a, b, k * 2 + 1, l, (l + r) / 2);
+            let vr = self.execute_query(a, b, k * 2 + 2, (l + r) / 2, r);
             (self.operator)(vl, vr)
         }
     }
