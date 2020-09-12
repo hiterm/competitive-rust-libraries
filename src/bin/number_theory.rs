@@ -110,6 +110,54 @@ fn binom_coef(n: usize, k: usize) -> usize {
     ret
 }
 
+struct Factorize {
+    min_factor: Vec<usize>,
+}
+
+impl Factorize {
+    fn new(max: usize) -> Factorize {
+        let min_factor = Factorize::prime_min_factor(max);
+        Factorize { min_factor }
+    }
+
+    fn prime_min_factor(max: usize) -> Vec<usize> {
+        let mut min_factor = vec![0usize; max + 1];
+        min_factor[0] = 0;
+        min_factor[1] = 1;
+
+        for i in 2..=max {
+            if min_factor[i] == 0 {
+                min_factor[i] = i;
+                let mut j = i * 2;
+                while j <= max {
+                    if min_factor[j] == 0 {
+                        min_factor[j] = i;
+                    }
+                    j += i;
+                }
+            }
+        }
+
+        min_factor
+    }
+
+    fn factorize(&mut self, n: usize) -> Vec<(usize, usize)> {
+        let mut factors = vec![];
+        let mut n = n;
+        while n != 1 {
+            let prime = self.min_factor[n];
+            let mut exp = 0;
+            while self.min_factor[n] == prime {
+                exp += 1;
+                n /= prime;
+            }
+            factors.push((prime, exp));
+        }
+
+        factors
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
