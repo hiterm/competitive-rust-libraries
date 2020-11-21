@@ -1,23 +1,5 @@
 use std::collections::BTreeSet;
 
-fn main() {
-    let mut set = BTreeSet::new();
-    set.insert(1);
-    set.insert(2);
-    set.insert(3);
-    set.insert(4);
-    set.insert(5);
-    println!("{}", set.get_max().unwrap());
-    println!("{}", set.get_min().unwrap());
-    println!("{:?}", &set);
-    println!("{}", set.pop_max().unwrap());
-    println!("{:?}", &set);
-    println!("{}", set.pop_min().unwrap());
-    println!("{:?}", &set);
-    println!("{}", set.pop_max().unwrap());
-    println!("{:?}", &set);
-}
-
 trait BTreeSetUtil<T> {
     fn get_max(&self) -> Option<&T>;
     fn get_min(&self) -> Option<&T>;
@@ -51,5 +33,28 @@ where
             None => None,
             Some(min) => self.take(&min),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn btreeset_test() {
+        let mut set = BTreeSet::new();
+        set.insert(1);
+        set.insert(2);
+        set.insert(3);
+        set.insert(4);
+        set.insert(5);
+        assert_eq!(5, *set.get_max().unwrap());
+        assert_eq!(1, *set.get_min().unwrap());
+        assert_eq!(5, set.pop_max().unwrap());
+        assert_eq!(4, set.len());
+        assert_eq!(1, set.pop_min().unwrap());
+        assert_eq!(3, set.len());
+        assert_eq!(4, set.pop_max().unwrap());
+        assert_eq!(2, set.len());
     }
 }
