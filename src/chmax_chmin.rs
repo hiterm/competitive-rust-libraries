@@ -14,8 +14,6 @@ macro_rules! chmin {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn chmax_test() {
         let mut a = 5;

@@ -6,8 +6,6 @@ macro_rules! multi_vec {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn multi_vec_test() {
         let v = multi_vec![0; 2, 2];
