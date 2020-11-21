@@ -1,7 +1,5 @@
 #![allow(unused)]
 
-fn main() {}
-
 // TODO: Rangeのメソッドにする
 
 fn binary_search_int_max<F>(min: isize, max: isize, condition: F) -> Option<isize>
