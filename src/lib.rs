@@ -5,5 +5,6 @@ pub mod binary_search;
 pub mod cumulative_sum;
 pub mod multiset;
 pub mod grid;
+pub mod graph;
 
 // TODO: Add other modules

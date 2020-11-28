@@ -1,73 +1,5 @@
-fn main() {
-    let n = 4;
-    // graph shape:
-    // 0 - 1 - 3
-    //   \
-    //     2
-    let graph_mat = vec![
-        vec![0, 1, 1, 0],
-        vec![1, 0, 0, 1],
-        vec![1, 0, 0, 0],
-        vec![0, 1, 0, 0],
-    ];
-    eprintln!("{:?}", graph_mat);
-
-    let mut graph_list = vec![vec![]; n];
-    for i in 0..n {
-        for j in 0..n {
-            if graph_mat[i][j] == 1 {
-                graph_list[i].push(j);
-            }
-        }
-    }
-    eprintln!("{:?}", graph_list);
-
-    println!("start bfs");
-    bfs(0, &graph_list);
-    println!();
-
-    println!("start dfs");
-    dfs(0, &graph_list);
-    println!();
-
-    println!("start dfs recursive");
-    dfs_recursive(0, &graph_list);
-
-    println!("start dijkstra");
-    let distances = dijkstra(0, &graph_list);
-    println!("{:?}", distances);
-
-    // graph shape:
-    // 0 -> 1 -> 3
-    //   ↘
-    //     2
-    let mut graph_list2 = vec![vec![]; n];
-    graph_list2[0].push(1);
-    graph_list2[0].push(2);
-    graph_list2[1].push(3);
-    println!("Topological Sort");
-    match topological_sort(&graph_list2) {
-        Some(v) => println!("{:?}", v),
-        None => println!("Graph has a closed path.")
-    }
-
-    // graph shape:
-    // 0 -> 1
-    //   ↖  ↓
-    //      2
-    let mut graph_list3 = vec![vec![]; n];
-    graph_list3[0].push(1);
-    graph_list3[1].push(2);
-    graph_list3[2].push(0);
-    println!("Topological Sort");
-    match topological_sort(&graph_list3) {
-        Some(v) => println!("{:?}", v),
-        None => println!("Graph has a closed path.")
-    }
-}
-
 // 幅優先探索
-fn bfs(start: usize, graph_list: &[Vec<usize>]) {
+pub fn bfs(start: usize, graph_list: &[Vec<usize>]) {
     use std::collections::VecDeque;
 
     let n = graph_list.len();
@@ -91,7 +23,7 @@ fn bfs(start: usize, graph_list: &[Vec<usize>]) {
 }
 
 // closureを受け取る幅優先探索
-fn bfs_closure<F>(start: usize, graph_list: &[Vec<usize>], mut func: F)
+pub fn bfs_closure<F>(start: usize, graph_list: &[Vec<usize>], mut func: F)
 where
     F: FnMut(usize, usize)
 {
@@ -118,7 +50,7 @@ where
 }
 
 // 深さ優先探索
-fn dfs(start: usize, graph_list: &[Vec<usize>]) {
+pub fn dfs(start: usize, graph_list: &[Vec<usize>]) {
     let n = graph_list.len();
 
     let mut visited = vec![false; n];
@@ -140,14 +72,14 @@ fn dfs(start: usize, graph_list: &[Vec<usize>]) {
 }
 
 // 深さ優先探索（再帰）
-fn dfs_recursive(start: usize, graph_list: &[Vec<usize>]) {
+pub fn dfs_recursive(start: usize, graph_list: &[Vec<usize>]) {
     let n = graph_list.len();
     let mut visited = vec![false; n];
 
     dfs_aux(start, graph_list, &mut visited);
 }
 // 補助関数
-fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
+pub fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
     visited[start] = true;
 
     eprintln!("visit {}", start);
@@ -160,7 +92,7 @@ fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
 }
 
 // クロージャを受け取るdfs
-fn dfs_closure<F>(current: usize, graph_list: &[Vec<usize>], mut func: F)
+pub fn dfs_closure<F>(current: usize, graph_list: &[Vec<usize>], mut func: F)
 where
     F: FnMut(usize, usize)
 {
@@ -170,7 +102,7 @@ where
     dfs_closure_aux(current, graph_list, &mut visited, &mut func);
 }
 // 補助関数
-fn dfs_closure_aux<F>(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>, func: &mut F)
+pub fn dfs_closure_aux<F>(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>, func: &mut F)
 where
     F: FnMut(usize, usize)
 {
@@ -184,8 +116,8 @@ where
     }
 }
 
-// ダイクストラ法。辺の長さがすべて1の場合。
-fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
+// ダイクストラ法
+pub fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
     use std::cmp::Reverse;
     use std::collections::BinaryHeap;
 
@@ -219,7 +151,7 @@ fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
 
 // Warshall-Floyd法
 #[allow(unused)]
-fn warshall_floyd(graph_mat: &[Vec<usize>]) -> Vec<Vec<usize>> {
+pub fn warshall_floyd(graph_mat: &[Vec<usize>]) -> Vec<Vec<usize>> {
     let n = graph_mat.len();
 
     let mut d = vec![vec![std::usize::MAX >> 2; n]; n];
@@ -249,7 +181,7 @@ fn warshall_floyd(graph_mat: &[Vec<usize>]) -> Vec<Vec<usize>> {
 
 // グラフの直径
 #[allow(unused)]
-fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
+pub fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
     let d_mat = warshall_floyd(&graph_mat);
     let mut diameter = 0;
     for v in d_mat {
@@ -265,7 +197,7 @@ fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
 
 // 木の直径．グラフが閉路を持たないときのみ使える。
 #[allow(unused)]
-fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
+pub fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
     let start = 0;
     let d_v = dijkstra(start, graph_list);
 
@@ -291,7 +223,7 @@ fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
 
 // 2部グラフ判定
 #[allow(unused)]
-fn is_bipartite_graph(graph_list: &[Vec<usize>]) -> bool {
+pub fn is_bipartite_graph(graph_list: &[Vec<usize>]) -> bool {
     let n = graph_list.len();
 
     let mut stack: Vec<(usize, bool)> = vec![];
@@ -320,7 +252,7 @@ fn is_bipartite_graph(graph_list: &[Vec<usize>]) -> bool {
     true
 }
 
-fn topological_sort(graph_list: &[Vec<usize>]) -> Option<Vec<usize>> {
+pub fn topological_sort(graph_list: &[Vec<usize>]) -> Option<Vec<usize>> {
     let n = graph_list.len();
 
     let mut incoming_num = vec![0; n];

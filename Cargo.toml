@@ -1,6 +1,7 @@
 [package]
-name = "rust_libraries"
+name = "competitive_rust_libraries"
 version = "0.1.0"
 authors = ["htlsne <htlsne23@gmail.com>"]
+edition = "2018"
 
 [dependencies]
