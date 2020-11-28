@@ -6,5 +6,6 @@ pub mod cumulative_sum;
 pub mod multiset;
 pub mod grid;
 pub mod graph;
+pub mod vec_utils;
 
 // TODO: Add other modules
