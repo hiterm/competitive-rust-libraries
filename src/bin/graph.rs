@@ -44,7 +44,7 @@ fn main() {
             }
         }
     }
-    let distances = dijkstra(0, &graph_list);
+    let distances = dijkstra(0, &graph_with_distance);
     println!("{:?}", distances);
 
     // graph shape:

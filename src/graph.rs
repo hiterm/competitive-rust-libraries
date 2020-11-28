@@ -25,7 +25,7 @@ pub fn bfs(start: usize, graph_list: &[Vec<usize>]) {
 // closureを受け取る幅優先探索
 pub fn bfs_closure<F>(start: usize, graph_list: &[Vec<usize>], mut func: F)
 where
-    F: FnMut(usize, usize)
+    F: FnMut(usize, usize),
 {
     use std::collections::VecDeque;
 
@@ -94,7 +94,7 @@ pub fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>)
 // クロージャを受け取るdfs
 pub fn dfs_closure<F>(current: usize, graph_list: &[Vec<usize>], mut func: F)
 where
-    F: FnMut(usize, usize)
+    F: FnMut(usize, usize),
 {
     let n = graph_list.len();
     let mut visited = vec![false; n];
@@ -102,9 +102,13 @@ where
     dfs_closure_aux(current, graph_list, &mut visited, &mut func);
 }
 // 補助関数
-pub fn dfs_closure_aux<F>(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>, func: &mut F)
-where
-    F: FnMut(usize, usize)
+pub fn dfs_closure_aux<F>(
+    start: usize,
+    graph_list: &[Vec<usize>],
+    visited: &mut Vec<bool>,
+    func: &mut F,
+) where
+    F: FnMut(usize, usize),
 {
     visited[start] = true;
 
@@ -117,7 +121,33 @@ where
 }
 
 // ダイクストラ法
-pub fn dijkstra(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
+pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+
+    let n = graph_list.len();
+    let mut distances = vec![std::u64::MAX >> 2; n];
+    distances[start] = 0;
+
+    // BinaryHeapは最大ヒープなので、Reverseで距離最小のものを取り出せるようにする
+    // ヒープの中身は Reverse((distance, distination))
+    let mut queue: BinaryHeap<Reverse<(u64, usize)>> = BinaryHeap::new();
+    queue.push(Reverse((0, start)));
+
+    while let Some(Reverse((d, u))) = queue.pop() {
+        for &(v, edge_d) in &graph_list[u] {
+            let alt = d + edge_d;
+            if distances[v] > alt {
+                distances[v] = alt;
+                queue.push(Reverse((alt, v)))
+            }
+        }
+    }
+
+    distances
+}
+
+pub fn dijkstra_dist_1(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
     use std::cmp::Reverse;
     use std::collections::BinaryHeap;
 
@@ -199,7 +229,7 @@ pub fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
 #[allow(unused)]
 pub fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
     let start = 0;
-    let d_v = dijkstra(start, graph_list);
+    let d_v = dijkstra_dist_1(start, graph_list);
 
     let mut farthest = start;
     let mut d_max = 0;
@@ -212,7 +242,7 @@ pub fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
 
     let start = farthest;
     let mut d_max = 0;
-    let d_v = dijkstra(start, graph_list);
+    let d_v = dijkstra_dist_1(start, graph_list);
     for (_, &d) in d_v.iter().enumerate() {
         if d > d_max {
             d_max = d;
