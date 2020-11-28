@@ -147,38 +147,6 @@ pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
     distances
 }
 
-pub fn dijkstra_dist_1(start: usize, graph_list: &[Vec<usize>]) -> Vec<usize> {
-    use std::cmp::Reverse;
-    use std::collections::BinaryHeap;
-
-    let n = graph_list.len();
-    let mut distances = vec![std::usize::MAX >> 2; n];
-    distances[start] = 0;
-
-    // BinaryHeapは最大ヒープなので、Reverseで距離最小のものを取り出せるようにする
-    // ヒープの中身は Reverse((distance, distination))
-    let mut queue: BinaryHeap<Reverse<(usize, usize)>> = BinaryHeap::new();
-    for vertex in 0..n {
-        queue.push(Reverse((distances[vertex], vertex)));
-    }
-
-    while !queue.is_empty() {
-        let Reverse((d, u)) = queue.pop().unwrap();
-        eprintln!("u: {}", u);
-        eprintln!("distances: {:?}", distances);
-        for &v in &graph_list[u] {
-            eprintln!("v: {}", v);
-            let alt = d + 1;
-            if distances[v] > alt {
-                distances[v] = alt;
-                queue.push(Reverse((alt, v)))
-            }
-        }
-    }
-
-    distances
-}
-
 // Warshall-Floyd法
 #[allow(unused)]
 pub fn warshall_floyd(graph_mat: &[Vec<usize>]) -> Vec<Vec<usize>> {
@@ -227,9 +195,9 @@ pub fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
 
 // 木の直径．グラフが閉路を持たないときのみ使える。
 #[allow(unused)]
-pub fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
+pub fn tree_diameter(graph_list: &[Vec<(usize, u64)>]) -> u64 {
     let start = 0;
-    let d_v = dijkstra_dist_1(start, graph_list);
+    let d_v = dijkstra(start, graph_list);
 
     let mut farthest = start;
     let mut d_max = 0;
@@ -242,7 +210,7 @@ pub fn tree_diameter(graph_list: &[Vec<usize>]) -> usize {
 
     let start = farthest;
     let mut d_max = 0;
-    let d_v = dijkstra_dist_1(start, graph_list);
+    let d_v = dijkstra(start, graph_list);
     for (_, &d) in d_v.iter().enumerate() {
         if d > d_max {
             d_max = d;
