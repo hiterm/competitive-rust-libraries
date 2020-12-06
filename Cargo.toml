@@ -5,3 +5,4 @@ authors = ["htlsne <htlsne23@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+ac-library-rs = { git = "https://github.com/rust-lang-ja/ac-library-rs" }

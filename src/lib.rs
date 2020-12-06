@@ -8,5 +8,6 @@ pub mod grid;
 pub mod graph;
 pub mod vec_utils;
 pub mod number_theory;
+pub mod mint_util_acl;
 
 // TODO: Add other modules
