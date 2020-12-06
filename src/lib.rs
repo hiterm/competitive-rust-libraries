@@ -7,5 +7,6 @@ pub mod multiset;
 pub mod grid;
 pub mod graph;
 pub mod vec_utils;
+pub mod number_theory;
 
 // TODO: Add other modules

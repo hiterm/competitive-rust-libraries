@@ -1,39 +1,7 @@
 #![allow(unused)]
 use std::collections::{HashSet, HashMap};
-#[allow(unused_imports)]
-use std::time::Instant;
 
-fn main() {
-    let a = 12;
-    let b = 18;
-
-    let gcd = gcd(a, b);
-    println!("gcd: {}", gcd);
-    println!("sqrt: {}", (gcd as f64).sqrt() as usize);
-
-    let primes = prime_sieve(100);
-    println!("primes: {:?}", primes);
-
-    for i in 1..101 {
-        println!("prime factor of {}: {:?}", i, prime_factor(i));
-    }
-
-    // for newer rust version
-    //
-    // println!("{:?}", divisors_set(12));
-    // let start = Instant::now();
-    // println!("{:?}", divisors_set(10_000_000_000_000));
-    // let end = start.elapsed();
-    // println!("{}ms", end.as_millis());
-    //
-    // println!("{:?}", divisors_vec(12));
-    // let start = Instant::now();
-    // println!("{:?}", divisors_vec(10_000_000_000_000));
-    // let end = start.elapsed();
-    // println!("{}ms", end.as_millis());
-}
-
-fn gcd(a: usize, b: usize) -> usize {
+pub fn gcd(a: usize, b: usize) -> usize {
     let c = a % b;
     if c == 0 {
         b
@@ -42,11 +10,11 @@ fn gcd(a: usize, b: usize) -> usize {
     }
 }
 
-fn lcm(a: usize, b: usize) -> u64 {
+pub fn lcm(a: usize, b: usize) -> usize {
     a / gcd(a, b) * b
 }
 
-fn prime_sieve(n: usize) -> Vec<u64> {
+pub fn prime_sieve(n: usize) -> Vec<u64> {
     let mut table: Vec<u64> = vec![0; n + 1];
     let mut primes: Vec<u64> = Vec::new();
 
@@ -65,7 +33,7 @@ fn prime_sieve(n: usize) -> Vec<u64> {
     primes
 }
 
-fn prime_factor(n: u64) -> HashMap<u64, u64> {
+pub fn prime_factor(n: u64) -> HashMap<u64, u64> {
     let sqrt = (n as f64).sqrt() as u64;
     let mut rest = n;
     let mut factors = HashMap::new();
@@ -83,13 +51,13 @@ fn prime_factor(n: u64) -> HashMap<u64, u64> {
     factors
 }
 
-fn divisors_vec(n: u64) -> Vec<u64> {
+pub fn divisors_vec(n: u64) -> Vec<u64> {
     prime_factor(n).iter().fold(vec![1], |acc, (&p, &pow)| {
         (0..=pow).flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32))).collect()
     })
 }
 
-fn divisors_set(n: u64) -> HashSet<u64> {
+pub fn divisors_set(n: u64) -> HashSet<u64> {
     let mut set = HashSet::new();
     set.insert(1);
 
@@ -98,7 +66,7 @@ fn divisors_set(n: u64) -> HashSet<u64> {
     })
 }
 
-fn binom_coef(n: usize, k: usize) -> usize {
+pub fn binom_coef(n: usize, k: usize) -> usize {
     if n < k {
         return 0;
     }
@@ -114,12 +82,12 @@ fn binom_coef(n: usize, k: usize) -> usize {
     ret
 }
 
-struct Factorize {
+pub struct Factorize {
     min_factor: Vec<usize>,
 }
 
 impl Factorize {
-    fn new(max: usize) -> Factorize {
+    pub fn new(max: usize) -> Factorize {
         let min_factor = Factorize::prime_min_factor(max);
         Factorize { min_factor }
     }
@@ -145,7 +113,7 @@ impl Factorize {
         min_factor
     }
 
-    fn factorize(&mut self, n: usize) -> Vec<(usize, usize)> {
+    pub fn factorize(&mut self, n: usize) -> Vec<(usize, usize)> {
         let mut factors = vec![];
         let mut n = n;
         while n != 1 {
