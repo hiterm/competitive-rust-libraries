@@ -1,4 +1,4 @@
-fn cumulative_sum<T>(v: &Vec<T>) -> Vec<T>
+pub fn cumulative_sum<T>(v: &Vec<T>) -> Vec<T>
 where
     T: Clone + std::ops::Add<Output = T> + From<u8>,
 {
@@ -17,13 +17,14 @@ where
 mod tests {
     use super::*;
 
-#[test]
+    #[test]
     fn cumulative_sum_i64_test() {
         let v: Vec<i64> = vec![1, 2, 3];
         let csum = cumulative_sum(&v);
         assert_eq!(vec![0, 1, 3, 6], csum);
     }
 
+    #[test]
     fn cumulative_sum_usize_test() {
         let v: Vec<usize> = vec![1, 2, 3];
         let csum = cumulative_sum(&v);
