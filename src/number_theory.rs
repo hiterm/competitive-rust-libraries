@@ -42,6 +42,10 @@ fn gcd(a: usize, b: usize) -> usize {
     }
 }
 
+fn lcm(a: usize, b: usize) -> u64 {
+    a / gcd(a, b) * b
+}
+
 fn prime_sieve(n: usize) -> Vec<u64> {
     let mut table: Vec<u64> = vec![0; n + 1];
     let mut primes: Vec<u64> = Vec::new();
