@@ -1,63 +1,54 @@
-use std::cmp;
+// https://algo-logic.info/tree-dp/
 
-// use proconio::input;
-// #[allow(unused_imports)]
-// use proconio::marker::*;
-
-//{{{
-#[allow(unused_macros)]
-macro_rules! multi_vec {
-    ( $elem:expr; $num:expr ) => (vec![$elem; $num]);
-    ( $elem:expr; $num:expr, $($rest:expr),* ) => (vec![multi_vec![$elem; $($rest),*]; $num]);
-}
-//}}}
-
-// fn main() {
-//     input! {
-//         n: usize,
-//         edges: [(Usize1, Usize1); n - 1],
-//     }
-
-//     let mut reroot = Rerooting::new(n);
-//     for (a, b) in edges {
-//         reroot.add_edge(a, b);
-//         reroot.add_edge(b, a);
-//     }
-//     reroot.build();
-
-//     for i in 0..n {
-//         println!("{}", reroot.ans[i].dp);
-//     }
-// }
+use std::{
+    cmp,
+    ops::{Mul, MulAssign},
+};
 
 // TODO: Dpのメソッドにする
-const IDENTITY: Dp = Dp { dp: -1 };
+const IDENTITY: Dp = Dp { value: -1 };
 const INF: usize = std::usize::MAX >> 2;
 
+// 問題ごとに書き換え
 #[derive(Clone, Copy, Debug)]
 struct Dp {
-    dp: i64,
+    value: i64,
 }
 
 impl Dp {
-    fn new(dp: i64) -> Dp {
-        Dp { dp }
+    fn new(value: i64) -> Dp {
+        Dp { value }
     }
 }
 
-fn merge(dp_cum: Dp, d: Dp) -> Dp {
-    Dp::new(cmp::max(dp_cum.dp, d.dp))
+impl Mul for Dp {
+    type Output = Self;
+
+    fn mul(self, rhs: Self) -> Self {
+        let Dp { value: v1 } = self;
+        let Dp { value: v2 } = rhs;
+        Dp::new(cmp::max(v1, v2))
+    }
+}
+
+impl MulAssign for Dp {
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = *self * rhs;
+    }
 }
 
 fn add_root(d: Dp) -> Dp {
-    Dp::new(d.dp + 1)
+    Dp::new(d.value + 1)
 }
+// 書き換えここまで
+
+type Graph = Vec<Vec<Edge>>;
 
 #[derive(Clone, Debug)]
 struct Edge {
     to: usize,
 }
-type Graph = Vec<Vec<Edge>>;
+
 impl Edge {
     fn new(to: usize) -> Edge {
         Edge { to }
@@ -97,7 +88,7 @@ impl Rerooting {
                 continue;
             }
             self.dp[v][i] = self.dfs(u, v);
-            dp_cum = merge(dp_cum, self.dp[v][i])
+            dp_cum *= self.dp[v][i];
         }
 
         add_root(dp_cum)
@@ -114,10 +105,10 @@ impl Rerooting {
         let mut dp_l = vec![IDENTITY; deg + 1];
         let mut dp_r = vec![IDENTITY; deg + 1];
         for i in 0..deg {
-            dp_l[i + 1] = merge(dp_l[i], self.dp[v][i]);
+            dp_l[i + 1] = dp_l[i] * self.dp[v][i];
         }
         for i in (0..deg).rev() {
-            dp_r[i] = merge(dp_r[i + 1], self.dp[v][i]);
+            dp_r[i] = dp_r[i + 1] * self.dp[v][i];
         }
 
         self.ans[v] = add_root(dp_l[deg]);
@@ -127,7 +118,7 @@ impl Rerooting {
             if u == p {
                 continue;
             }
-            self.bfs(u, add_root(merge(dp_l[i], dp_r[i + 1])), v);
+            self.bfs(u, add_root(dp_l[i] * dp_r[i + 1]), v);
         }
     }
 }
@@ -150,7 +141,7 @@ mod tests {
         reroot.build();
         assert_eq!(
             vec![3, 4, 2, 3, 3, 4],
-            reroot.ans.iter().map(|dp| dp.dp).collect::<Vec<_>>()
+            reroot.ans.iter().map(|dp| dp.value).collect::<Vec<_>>()
         );
     }
 }
