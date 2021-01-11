@@ -72,22 +72,17 @@ impl Edge {
     }
 }
 
-struct Rerooting {
+struct Rerooting<'a> {
     dp: Vec<Vec<Dp>>,
     ans: Vec<Dp>,
-    graph: Graph,
+    graph: &'a Graph,
 }
 
-impl Rerooting {
-    fn new(n: usize) -> Rerooting {
+impl<'a> Rerooting<'a> {
+    fn new(n: usize, graph: &Graph) -> Rerooting {
         let dp = vec![vec![]; n];
         let ans = vec![Dp::IDENTITY; n];
-        let g = Graph::new(n);
-        Rerooting { dp, ans, graph: g }
-    }
-
-    fn add_edge(&mut self, a: usize, b: usize) {
-        self.graph.add_edge(a, b);
+        Rerooting { dp, ans, graph }
     }
 
     fn build(&mut self) {
@@ -140,6 +135,12 @@ impl Rerooting {
     }
 }
 
+fn rerooting(n: usize, graph: &Graph) -> Vec<Dp> {
+    let mut rerooting = Rerooting::new(n, graph);
+    rerooting.build();
+    rerooting.ans
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -148,17 +149,18 @@ mod tests {
     fn rerooting1_test() {
         let n = 6;
         let edges = vec![(1, 2), (1, 3), (3, 4), (3, 5), (5, 6)];
-        let mut reroot = Rerooting::new(n);
+        let mut graph = Graph::new(n);
         for (a, b) in edges {
             let a = a - 1;
             let b = b - 1;
-            reroot.add_edge(a, b);
-            reroot.add_edge(b, a);
+            graph.add_edge(a, b);
+            graph.add_edge(b, a);
         }
-        reroot.build();
+
+        let ans = rerooting(n, &graph);
         assert_eq!(
             vec![3, 4, 2, 3, 3, 4],
-            reroot.ans.iter().map(|dp| dp.value).collect::<Vec<_>>()
+            ans.iter().map(|dp| dp.value).collect::<Vec<_>>()
         );
     }
 }
