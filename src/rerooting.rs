@@ -44,24 +44,24 @@ impl Rerootable for Dp {
 }
 // 書き換えここまで
 
-trait Monoid: Clone + Copy + Mul<Output = Self> + MulAssign {
+pub trait Monoid: Clone + Copy + Mul<Output = Self> + MulAssign {
     const IDENTITY: Self;
 }
 
-trait Rerootable: Monoid {
+pub trait Rerootable: Monoid {
     fn add_root(&self) -> Self;
 }
 
-struct Graph {
+pub struct Graph {
     g: Vec<Vec<Edge>>,
 }
 
 impl Graph {
-    fn new(n: usize) -> Graph {
+    pub fn new(n: usize) -> Graph {
         Graph { g: vec![vec![]; n] }
     }
 
-    fn add_edge(&mut self, from: usize, to: usize) {
+    pub fn add_edge(&mut self, from: usize, to: usize) {
         self.g[from].push(Edge::new(to));
     }
 
@@ -153,7 +153,7 @@ where
     }
 }
 
-fn rerooting<T>(n: usize, graph: &Graph) -> Vec<T>
+pub fn rerooting<T>(n: usize, graph: &Graph) -> Vec<T>
 where
     T: Rerootable,
 {
