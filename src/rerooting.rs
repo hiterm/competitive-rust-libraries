@@ -19,6 +19,10 @@ impl Dp {
     fn new(value: i64) -> Dp {
         Dp { value }
     }
+
+    fn add_root(&self) -> Dp {
+        Dp::new(self.value + 1)
+    }
 }
 
 impl Mul for Dp {
@@ -35,10 +39,6 @@ impl MulAssign for Dp {
     fn mul_assign(&mut self, rhs: Self) {
         *self = *self * rhs;
     }
-}
-
-fn add_root(d: Dp) -> Dp {
-    Dp::new(d.value + 1)
 }
 // 書き換えここまで
 
@@ -91,7 +91,7 @@ impl Rerooting {
             dp_cum *= self.dp[v][i];
         }
 
-        add_root(dp_cum)
+        dp_cum.add_root()
     }
 
     fn bfs(&mut self, v: usize, dp_p: Dp, p: usize) {
@@ -111,14 +111,14 @@ impl Rerooting {
             dp_r[i] = dp_r[i + 1] * self.dp[v][i];
         }
 
-        self.ans[v] = add_root(dp_l[deg]);
+        self.ans[v] = dp_l[deg].add_root();
 
         for i in 0..deg {
             let u = self.g[v][i].to;
             if u == p {
                 continue;
             }
-            self.bfs(u, add_root(dp_l[i] * dp_r[i + 1]), v);
+            self.bfs(u, (dp_l[i] * dp_r[i + 1]).add_root(), v);
         }
     }
 }
