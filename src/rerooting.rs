@@ -13,7 +13,6 @@ struct Dp {
 
 impl Dp {
     const IDENTITY: Dp = Dp { value: -1 };
-    const INF: usize = std::usize::MAX >> 2;
 
     fn new(value: i64) -> Dp {
         Dp { value }
@@ -47,9 +46,7 @@ struct Graph {
 
 impl Graph {
     fn new(n: usize) -> Graph {
-        Graph {
-            g: vec![vec![]; n],
-        }
+        Graph { g: vec![vec![]; n] }
     }
 
     fn add_edge(&mut self, from: usize, to: usize) {
@@ -86,31 +83,35 @@ impl<'a> Rerooting<'a> {
     }
 
     fn build(&mut self) {
-        self.dfs(0, Dp::INF);
-        self.bfs(0, Dp::IDENTITY, Dp::INF);
+        self.dfs(0, None);
+        self.bfs(0, Dp::IDENTITY, None);
     }
 
-    fn dfs(&mut self, v: usize, p: usize) -> Dp {
+    fn dfs(&mut self, v: usize, p: Option<usize>) -> Dp {
         let mut dp_cum = Dp::IDENTITY;
         let deg = self.graph.get_edges(v).len();
         self.dp[v] = vec![Dp::IDENTITY; deg];
         for i in 0..deg {
             let u = self.graph.get_edges(v)[i].to;
-            if u == p {
-                continue;
+            if let Some(p) = p {
+                if u == p {
+                    continue;
+                }
             }
-            self.dp[v][i] = self.dfs(u, v);
+            self.dp[v][i] = self.dfs(u, Some(v));
             dp_cum *= self.dp[v][i];
         }
 
         dp_cum.add_root()
     }
 
-    fn bfs(&mut self, v: usize, dp_p: Dp, p: usize) {
+    fn bfs(&mut self, v: usize, dp_p: Dp, p: Option<usize>) {
         let deg = self.graph.get_edges(v).len();
         for i in 0..deg {
-            if self.graph.get_edges(v)[i].to == p {
-                self.dp[v][i] = dp_p;
+            if let Some(p) = p {
+                if self.graph.get_edges(v)[i].to == p {
+                    self.dp[v][i] = dp_p;
+                }
             }
         }
 
@@ -127,10 +128,12 @@ impl<'a> Rerooting<'a> {
 
         for i in 0..deg {
             let u = self.graph.get_edges(v)[i].to;
-            if u == p {
-                continue;
+            if let Some(p) = p {
+                if u == p {
+                    continue;
+                }
             }
-            self.bfs(u, (dp_l[i] * dp_r[i + 1]).add_root(), v);
+            self.bfs(u, (dp_l[i] * dp_r[i + 1]).add_root(), Some(v));
         }
     }
 }
