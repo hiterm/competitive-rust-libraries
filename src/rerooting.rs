@@ -45,7 +45,7 @@ impl Rerootable for Dp {
     }
 }
 // 書き換えここまで
-//
+
 trait Monoid: Clone + Copy + Mul<Output = Self> + MulAssign {
     const IDENTITY: Self;
 }
