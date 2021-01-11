@@ -41,7 +41,25 @@ impl MulAssign for Dp {
 }
 // 書き換えここまで
 
-type Graph = Vec<Vec<Edge>>;
+struct Graph {
+    g: Vec<Vec<Edge>>,
+}
+
+impl Graph {
+    fn new(n: usize) -> Graph {
+        Graph {
+            g: vec![vec![]; n],
+        }
+    }
+
+    fn add_edge(&mut self, from: usize, to: usize) {
+        self.g[from].push(Edge::new(to));
+    }
+
+    fn get_edges(&self, v: usize) -> &[Edge] {
+        &self.g[v]
+    }
+}
 
 #[derive(Clone, Debug)]
 struct Edge {
@@ -57,19 +75,19 @@ impl Edge {
 struct Rerooting {
     dp: Vec<Vec<Dp>>,
     ans: Vec<Dp>,
-    g: Graph,
+    graph: Graph,
 }
 
 impl Rerooting {
     fn new(n: usize) -> Rerooting {
         let dp = vec![vec![]; n];
         let ans = vec![Dp::IDENTITY; n];
-        let g = vec![vec![]; n];
-        Rerooting { dp, ans, g }
+        let g = Graph::new(n);
+        Rerooting { dp, ans, graph: g }
     }
 
     fn add_edge(&mut self, a: usize, b: usize) {
-        self.g[a].push(Edge::new(b));
+        self.graph.add_edge(a, b);
     }
 
     fn build(&mut self) {
@@ -79,10 +97,10 @@ impl Rerooting {
 
     fn dfs(&mut self, v: usize, p: usize) -> Dp {
         let mut dp_cum = Dp::IDENTITY;
-        let deg = self.g[v].len();
+        let deg = self.graph.get_edges(v).len();
         self.dp[v] = vec![Dp::IDENTITY; deg];
         for i in 0..deg {
-            let u = self.g[v][i].to;
+            let u = self.graph.get_edges(v)[i].to;
             if u == p {
                 continue;
             }
@@ -94,9 +112,9 @@ impl Rerooting {
     }
 
     fn bfs(&mut self, v: usize, dp_p: Dp, p: usize) {
-        let deg = self.g[v].len();
+        let deg = self.graph.get_edges(v).len();
         for i in 0..deg {
-            if self.g[v][i].to == p {
+            if self.graph.get_edges(v)[i].to == p {
                 self.dp[v][i] = dp_p;
             }
         }
@@ -113,7 +131,7 @@ impl Rerooting {
         self.ans[v] = dp_l[deg].add_root();
 
         for i in 0..deg {
-            let u = self.g[v][i].to;
+            let u = self.graph.get_edges(v)[i].to;
             if u == p {
                 continue;
             }
