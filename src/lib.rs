@@ -9,5 +9,6 @@ pub mod graph;
 pub mod vec_utils;
 pub mod number_theory;
 pub mod mint_util_acl;
+pub mod rerooting;
 
 // TODO: Add other modules
