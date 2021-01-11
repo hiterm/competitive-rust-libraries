@@ -1,5 +1,7 @@
 // https://algo-logic.info/tree-dp/
 
+// TODO: for文を削れないか
+
 use std::{
     cmp,
     ops::{Mul, MulAssign},
@@ -12,14 +14,8 @@ struct Dp {
 }
 
 impl Dp {
-    const IDENTITY: Dp = Dp { value: -1 };
-
     fn new(value: i64) -> Dp {
         Dp { value }
-    }
-
-    fn add_root(&self) -> Dp {
-        Dp::new(self.value + 1)
     }
 }
 
@@ -38,7 +34,25 @@ impl MulAssign for Dp {
         *self = *self * rhs;
     }
 }
+
+impl Monoid for Dp {
+    const IDENTITY: Self = Dp { value: -1 };
+}
+
+impl Rerootable for Dp {
+    fn add_root(&self) -> Dp {
+        Dp::new(self.value + 1)
+    }
+}
 // 書き換えここまで
+//
+trait Monoid: Clone + Copy + Mul<Output = Self> + MulAssign {
+    const IDENTITY: Self;
+}
+
+trait Rerootable: Monoid {
+    fn add_root(&self) -> Self;
+}
 
 struct Graph {
     g: Vec<Vec<Edge>>,
@@ -69,28 +83,31 @@ impl Edge {
     }
 }
 
-struct Rerooting<'a> {
-    dp: Vec<Vec<Dp>>,
-    ans: Vec<Dp>,
+struct Rerooting<'a, T> {
+    dp: Vec<Vec<T>>,
+    ans: Vec<T>,
     graph: &'a Graph,
 }
 
-impl<'a> Rerooting<'a> {
-    fn new(n: usize, graph: &Graph) -> Rerooting {
+impl<'a, T> Rerooting<'a, T>
+where
+    T: Rerootable,
+{
+    fn new(n: usize, graph: &Graph) -> Rerooting<T> {
         let dp = vec![vec![]; n];
-        let ans = vec![Dp::IDENTITY; n];
+        let ans = vec![T::IDENTITY; n];
         Rerooting { dp, ans, graph }
     }
 
     fn build(&mut self) {
         self.dfs(0, None);
-        self.bfs(0, Dp::IDENTITY, None);
+        self.bfs(0, T::IDENTITY, None);
     }
 
-    fn dfs(&mut self, v: usize, p: Option<usize>) -> Dp {
-        let mut dp_cum = Dp::IDENTITY;
+    fn dfs(&mut self, v: usize, p: Option<usize>) -> T {
+        let mut dp_cum = T::IDENTITY;
         let deg = self.graph.get_edges(v).len();
-        self.dp[v] = vec![Dp::IDENTITY; deg];
+        self.dp[v] = vec![T::IDENTITY; deg];
         for i in 0..deg {
             let u = self.graph.get_edges(v)[i].to;
             if matches!(p, Some(p) if u == p) {
@@ -103,7 +120,7 @@ impl<'a> Rerooting<'a> {
         dp_cum.add_root()
     }
 
-    fn bfs(&mut self, v: usize, dp_p: Dp, p: Option<usize>) {
+    fn bfs(&mut self, v: usize, dp_p: T, p: Option<usize>) {
         let deg = self.graph.get_edges(v).len();
         if let Some(p) = p {
             for i in 0..deg {
@@ -113,8 +130,8 @@ impl<'a> Rerooting<'a> {
             }
         }
 
-        let mut dp_l = vec![Dp::IDENTITY; deg + 1];
-        let mut dp_r = vec![Dp::IDENTITY; deg + 1];
+        let mut dp_l = vec![T::IDENTITY; deg + 1];
+        let mut dp_r = vec![T::IDENTITY; deg + 1];
         for i in 0..deg {
             dp_l[i + 1] = dp_l[i] * self.dp[v][i];
         }
@@ -134,7 +151,10 @@ impl<'a> Rerooting<'a> {
     }
 }
 
-fn rerooting(n: usize, graph: &Graph) -> Vec<Dp> {
+fn rerooting<T>(n: usize, graph: &Graph) -> Vec<T>
+where
+    T: Rerootable,
+{
     let mut rerooting = Rerooting::new(n, graph);
     rerooting.build();
     rerooting.ans
@@ -156,7 +176,7 @@ mod tests {
             graph.add_edge(b, a);
         }
 
-        let ans = rerooting(n, &graph);
+        let ans: Vec<Dp> = rerooting(n, &graph);
         assert_eq!(
             vec![3, 4, 2, 3, 3, 4],
             ans.iter().map(|dp| dp.value).collect::<Vec<_>>()
