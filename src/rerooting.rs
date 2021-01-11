@@ -5,10 +5,6 @@ use std::{
     ops::{Mul, MulAssign},
 };
 
-// TODO: Dpのメソッドにする
-const IDENTITY: Dp = Dp { value: -1 };
-const INF: usize = std::usize::MAX >> 2;
-
 // 問題ごとに書き換え
 #[derive(Clone, Copy, Debug)]
 struct Dp {
@@ -16,6 +12,9 @@ struct Dp {
 }
 
 impl Dp {
+    const IDENTITY: Dp = Dp { value: -1 };
+    const INF: usize = std::usize::MAX >> 2;
+
     fn new(value: i64) -> Dp {
         Dp { value }
     }
@@ -64,7 +63,7 @@ struct Rerooting {
 impl Rerooting {
     fn new(n: usize) -> Rerooting {
         let dp = vec![vec![]; n];
-        let ans = vec![IDENTITY; n];
+        let ans = vec![Dp::IDENTITY; n];
         let g = vec![vec![]; n];
         Rerooting { dp, ans, g }
     }
@@ -74,14 +73,14 @@ impl Rerooting {
     }
 
     fn build(&mut self) {
-        self.dfs(0, INF);
-        self.bfs(0, IDENTITY, INF);
+        self.dfs(0, Dp::INF);
+        self.bfs(0, Dp::IDENTITY, Dp::INF);
     }
 
     fn dfs(&mut self, v: usize, p: usize) -> Dp {
-        let mut dp_cum = IDENTITY;
+        let mut dp_cum = Dp::IDENTITY;
         let deg = self.g[v].len();
-        self.dp[v] = vec![IDENTITY; deg];
+        self.dp[v] = vec![Dp::IDENTITY; deg];
         for i in 0..deg {
             let u = self.g[v][i].to;
             if u == p {
@@ -102,8 +101,8 @@ impl Rerooting {
             }
         }
 
-        let mut dp_l = vec![IDENTITY; deg + 1];
-        let mut dp_r = vec![IDENTITY; deg + 1];
+        let mut dp_l = vec![Dp::IDENTITY; deg + 1];
+        let mut dp_r = vec![Dp::IDENTITY; deg + 1];
         for i in 0..deg {
             dp_l[i + 1] = dp_l[i] * self.dp[v][i];
         }
