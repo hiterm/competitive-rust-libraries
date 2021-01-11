@@ -93,10 +93,8 @@ impl<'a> Rerooting<'a> {
         self.dp[v] = vec![Dp::IDENTITY; deg];
         for i in 0..deg {
             let u = self.graph.get_edges(v)[i].to;
-            if let Some(p) = p {
-                if u == p {
-                    continue;
-                }
+            if matches!(p, Some(p) if u == p) {
+                continue;
             }
             self.dp[v][i] = self.dfs(u, Some(v));
             dp_cum *= self.dp[v][i];
@@ -107,8 +105,8 @@ impl<'a> Rerooting<'a> {
 
     fn bfs(&mut self, v: usize, dp_p: Dp, p: Option<usize>) {
         let deg = self.graph.get_edges(v).len();
-        for i in 0..deg {
-            if let Some(p) = p {
+        if let Some(p) = p {
+            for i in 0..deg {
                 if self.graph.get_edges(v)[i].to == p {
                     self.dp[v][i] = dp_p;
                 }
@@ -128,10 +126,8 @@ impl<'a> Rerooting<'a> {
 
         for i in 0..deg {
             let u = self.graph.get_edges(v)[i].to;
-            if let Some(p) = p {
-                if u == p {
-                    continue;
-                }
+            if matches!(p, Some(p) if u == p) {
+                continue;
             }
             self.bfs(u, (dp_l[i] * dp_r[i + 1]).add_root(), Some(v));
         }
