@@ -1,7 +1,5 @@
 // https://algo-logic.info/tree-dp/
 
-// TODO: for文を削れないか
-
 use std::{
     cmp,
     ops::{Mul, MulAssign},
@@ -70,9 +68,13 @@ impl Graph {
     fn get_edges(&self, v: usize) -> &[Edge] {
         &self.g[v]
     }
+
+    fn get_degree(&self, v: usize) -> usize {
+        *&self.g[v].len()
+    }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 struct Edge {
     to: usize,
 }
@@ -106,14 +108,14 @@ where
 
     fn dfs(&mut self, v: usize, p: Option<usize>) -> T {
         let mut dp_cum = T::IDENTITY;
-        let deg = self.graph.get_edges(v).len();
+        let deg = self.graph.get_degree(v);
         self.dp[v] = vec![T::IDENTITY; deg];
-        for i in 0..deg {
-            let u = self.graph.get_edges(v)[i].to;
-            if matches!(p, Some(p) if u == p) {
+        for (i, edge) in self.graph.get_edges(v).iter().copied().enumerate() {
+            let next = edge.to;
+            if matches!(p, Some(p) if next == p) {
                 continue;
             }
-            self.dp[v][i] = self.dfs(u, Some(v));
+            self.dp[v][i] = self.dfs(next, Some(v));
             dp_cum *= self.dp[v][i];
         }
 
@@ -121,10 +123,10 @@ where
     }
 
     fn bfs(&mut self, v: usize, dp_p: T, p: Option<usize>) {
-        let deg = self.graph.get_edges(v).len();
+        let deg = self.graph.get_degree(v);
         if let Some(p) = p {
-            for i in 0..deg {
-                if self.graph.get_edges(v)[i].to == p {
+            for (i, edge) in self.graph.get_edges(v).iter().copied().enumerate() {
+                if edge.to == p {
                     self.dp[v][i] = dp_p;
                 }
             }
@@ -141,12 +143,12 @@ where
 
         self.ans[v] = dp_l[deg].add_root();
 
-        for i in 0..deg {
-            let u = self.graph.get_edges(v)[i].to;
-            if matches!(p, Some(p) if u == p) {
+        for (i, edge) in self.graph.get_edges(v).iter().copied().enumerate() {
+            let next = edge.to;
+            if matches!(p, Some(p) if next == p) {
                 continue;
             }
-            self.bfs(u, (dp_l[i] * dp_r[i + 1]).add_root(), Some(v));
+            self.bfs(next, (dp_l[i] * dp_r[i + 1]).add_root(), Some(v));
         }
     }
 }
