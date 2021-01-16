@@ -1,10 +1,5 @@
 // https://algo-logic.info/tree-dp/
 
-use std::{
-    cmp,
-    ops::{Mul, MulAssign},
-};
-
 // 問題ごとに書き換え
 #[derive(Clone, Copy, Debug)]
 struct Dp {
@@ -14,22 +9,6 @@ struct Dp {
 impl Dp {
     fn new(value: i64) -> Dp {
         Dp { value }
-    }
-}
-
-impl Mul for Dp {
-    type Output = Self;
-
-    fn mul(self, rhs: Self) -> Self {
-        let Dp { value: v1 } = self;
-        let Dp { value: v2 } = rhs;
-        Dp::new(cmp::max(v1, v2))
-    }
-}
-
-impl MulAssign for Dp {
-    fn mul_assign(&mut self, rhs: Self) {
-        *self = *self * rhs;
     }
 }
 
@@ -44,7 +23,7 @@ impl Rerootable for Dp {
 }
 // 書き換えここまで
 
-pub trait Monoid: Clone + Copy + Mul<Output = Self> + MulAssign {
+pub trait Monoid: Clone + Copy {
     const IDENTITY: Self;
 }
 
@@ -85,20 +64,27 @@ impl Edge {
     }
 }
 
-struct Rerooting<'a, T> {
+struct Rerooting<'a, T, F> {
     dp: Vec<Vec<T>>,
     ans: Vec<T>,
     graph: &'a Graph,
+    merge: F,
 }
 
-impl<'a, T> Rerooting<'a, T>
+impl<'a, T, F> Rerooting<'a, T, F>
 where
     T: Rerootable,
+    F: FnMut(T, T) -> T,
 {
-    fn new(n: usize, graph: &Graph) -> Rerooting<T> {
+    fn new(n: usize, graph: &Graph, merge: F) -> Rerooting<T, F> {
         let dp = vec![vec![]; n];
         let ans = vec![T::IDENTITY; n];
-        Rerooting { dp, ans, graph }
+        Rerooting {
+            dp,
+            ans,
+            graph,
+            merge,
+        }
     }
 
     fn build(&mut self) {
@@ -116,7 +102,7 @@ where
                 continue;
             }
             self.dp[v][i] = self.dfs(next, Some(v));
-            dp_cum *= self.dp[v][i];
+            dp_cum = (self.merge)(dp_cum, self.dp[v][i]);
         }
 
         dp_cum.add_root()
@@ -135,10 +121,10 @@ where
         let mut dp_l = vec![T::IDENTITY; deg + 1];
         let mut dp_r = vec![T::IDENTITY; deg + 1];
         for i in 0..deg {
-            dp_l[i + 1] = dp_l[i] * self.dp[v][i];
+            dp_l[i + 1] = (self.merge)(dp_l[i], self.dp[v][i]);
         }
         for i in (0..deg).rev() {
-            dp_r[i] = dp_r[i + 1] * self.dp[v][i];
+            dp_r[i] = (self.merge)(dp_r[i + 1], self.dp[v][i]);
         }
 
         self.ans[v] = dp_l[deg].add_root();
@@ -148,22 +134,26 @@ where
             if matches!(p, Some(p) if next == p) {
                 continue;
             }
-            self.bfs(next, (dp_l[i] * dp_r[i + 1]).add_root(), Some(v));
+            let merged = (self.merge)(dp_l[i], dp_r[i + 1]);
+            self.bfs(next, merged.add_root(), Some(v));
         }
     }
 }
 
-pub fn rerooting<T>(n: usize, graph: &Graph) -> Vec<T>
+pub fn rerooting<T, F>(n: usize, graph: &Graph, merge: F) -> Vec<T>
 where
     T: Rerootable,
+    F: FnMut(T, T) -> T,
 {
-    let mut rerooting = Rerooting::new(n, graph);
+    let mut rerooting = Rerooting::new(n, graph, merge);
     rerooting.build();
     rerooting.ans
 }
 
 #[cfg(test)]
 mod tests {
+    use std::cmp;
+
     use super::*;
 
     #[test]
@@ -177,8 +167,13 @@ mod tests {
             graph.add_edge(a, b);
             graph.add_edge(b, a);
         }
+        let merge = |x, y| {
+            let Dp { value: v1 } = x;
+            let Dp { value: v2 } = y;
+            Dp::new(cmp::max(v1, v2))
+        };
 
-        let ans: Vec<Dp> = rerooting(n, &graph);
+        let ans: Vec<Dp> = rerooting(n, &graph, merge);
         assert_eq!(
             vec![3, 4, 2, 3, 3, 4],
             ans.iter().map(|dp| dp.value).collect::<Vec<_>>()
