@@ -62,6 +62,14 @@ impl<E: Edge> Graph<E> {
     }
 }
 
+pub type SimpleGraph = Graph<SimpleEdge>;
+
+impl SimpleGraph {
+    pub fn connect(&mut self, from: usize, to: usize) {
+        self.add_edge(from, SimpleEdge::new(to));
+    }
+}
+
 // 幅優先探索
 pub fn bfs<E: Edge>(start: usize, graph: &Graph<E>) {
     use std::collections::VecDeque;

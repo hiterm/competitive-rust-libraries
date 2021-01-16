@@ -15,12 +15,12 @@ fn main() {
     eprintln!("{:?}", graph_mat);
 
     let mut graph_list = vec![vec![]; n];
-    let mut graph = Graph::new(n);
+    let mut graph = SimpleGraph::new(n);
     for i in 0..n {
         for j in 0..n {
             if graph_mat[i][j] == 1 {
                 graph_list[i].push(j);
-                graph.add_edge(i, SimpleEdge::new(j));
+                graph.connect(i, j);
             }
         }
     }
