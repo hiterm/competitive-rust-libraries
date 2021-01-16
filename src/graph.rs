@@ -1,8 +1,72 @@
+pub trait Edge: Clone {
+    fn to(&self) -> usize;
+}
+
+#[derive(Clone, Debug)]
+pub struct SimpleEdge {
+    to: usize,
+}
+
+impl SimpleEdge {
+    pub fn new(to: usize) -> SimpleEdge {
+        SimpleEdge { to }
+    }
+}
+
+impl Edge for SimpleEdge {
+    fn to(&self) -> usize {
+        self.to
+    }
+}
+
+pub struct Graph<E: Edge> {
+    adj_list: Vec<Vec<E>>,
+}
+
+impl<E: Edge> Graph<E> {
+    pub fn new(n: usize) -> Graph<E> {
+        Graph {
+            adj_list: vec![vec![]; n],
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.adj_list.len()
+    }
+
+    pub fn add_edge(&mut self, from: usize, edge: E) {
+        self.adj_list[from].push(edge);
+    }
+
+    pub fn edges(&self, from: usize) -> &[E] {
+        &self.adj_list[from]
+    }
+
+    pub fn degree(&self, v: usize) -> usize {
+        *&self.adj_list[v].len()
+    }
+
+    pub fn debug_print(&self) {
+        let n = self.len();
+        eprintln!("[");
+        for v in 0..n {
+            let s = self
+                .edges(v)
+                .iter()
+                .map(|x| x.to().to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
+            eprintln!("    [{}],", s);
+        }
+        eprintln!("]");
+    }
+}
+
 // 幅優先探索
-pub fn bfs(start: usize, graph_list: &[Vec<usize>]) {
+pub fn bfs<E: Edge>(start: usize, graph: &Graph<E>) {
     use std::collections::VecDeque;
 
-    let n = graph_list.len();
+    let n = graph.len();
 
     let mut visited = vec![false; n];
     let mut queue: VecDeque<usize> = VecDeque::new();
@@ -12,8 +76,10 @@ pub fn bfs(start: usize, graph_list: &[Vec<usize>]) {
 
     while !queue.is_empty() {
         let vertex = queue.pop_front().unwrap();
+        // replace it
         eprintln!("visit {}", vertex);
-        for &next in &graph_list[vertex] {
+        for edge in graph.edges(vertex) {
+            let next = edge.to();
             if !visited[next] {
                 visited[next] = true;
                 queue.push_back(next);
@@ -50,8 +116,8 @@ where
 }
 
 // 深さ優先探索
-pub fn dfs(start: usize, graph_list: &[Vec<usize>]) {
-    let n = graph_list.len();
+pub fn dfs<E: Edge>(start: usize, graph: &Graph<E>) {
+    let n = graph.len();
 
     let mut visited = vec![false; n];
     let mut stack: Vec<usize> = Vec::new();
@@ -62,7 +128,8 @@ pub fn dfs(start: usize, graph_list: &[Vec<usize>]) {
     while !stack.is_empty() {
         let vertex = stack.pop().unwrap();
         eprintln!("visit {}", vertex);
-        for &next in &graph_list[vertex] {
+        for edge in graph.edges(vertex) {
+            let next = edge.to();
             if !visited[next] {
                 visited[next] = true;
                 stack.push(next);
@@ -72,21 +139,22 @@ pub fn dfs(start: usize, graph_list: &[Vec<usize>]) {
 }
 
 // 深さ優先探索（再帰）
-pub fn dfs_recursive(start: usize, graph_list: &[Vec<usize>]) {
-    let n = graph_list.len();
+pub fn dfs_recursive<E: Edge>(start: usize, graph: &Graph<E>) {
+    let n = graph.len();
     let mut visited = vec![false; n];
 
-    dfs_aux(start, graph_list, &mut visited);
+    dfs_aux(start, graph, &mut visited);
 }
 // 補助関数
-pub fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
+pub fn dfs_aux<E: Edge>(start: usize, graph: &Graph<E>, visited: &mut Vec<bool>) {
     visited[start] = true;
 
     eprintln!("visit {}", start);
 
-    for &next in &graph_list[start] {
+    for edge in graph.edges(start) {
+        let next = edge.to();
         if !visited[next] {
-            dfs_aux(next, &graph_list, visited);
+            dfs_aux(next, &graph, visited);
         }
     }
 }
@@ -120,12 +188,30 @@ pub fn dfs_closure_aux<F>(
     }
 }
 
+#[derive(Clone)]
+pub struct EdgeWithLength {
+    to: usize,
+    len: u64,
+}
+
+impl EdgeWithLength {
+    pub fn new(to: usize, len: u64) -> EdgeWithLength {
+        EdgeWithLength { to, len }
+    }
+}
+
+impl Edge for EdgeWithLength {
+    fn to(&self) -> usize {
+        self.to
+    }
+}
+
 // ダイクストラ法
-pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
+pub fn dijkstra(start: usize, graph: &Graph<EdgeWithLength>) -> Vec<u64> {
     use std::cmp::Reverse;
     use std::collections::BinaryHeap;
 
-    let n = graph_list.len();
+    let n = graph.len();
     let mut distances = vec![std::u64::MAX >> 2; n];
     distances[start] = 0;
 
@@ -135,11 +221,12 @@ pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
     queue.push(Reverse((0, start)));
 
     while let Some(Reverse((d, u))) = queue.pop() {
-        for &(v, edge_d) in &graph_list[u] {
-            let alt = d + edge_d;
-            if distances[v] > alt {
-                distances[v] = alt;
-                queue.push(Reverse((alt, v)))
+        for edge in graph.edges(u) {
+            let &EdgeWithLength { to: adj, len: edge_len } = edge;
+            let alt = d + edge_len;
+            if distances[adj] > alt {
+                distances[adj] = alt;
+                queue.push(Reverse((alt, adj)))
             }
         }
     }
@@ -147,7 +234,7 @@ pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
     distances
 }
 
-// Warshall-Floyd法
+// Warshall-Floyd法(長さ1)
 #[allow(unused)]
 pub fn warshall_floyd(graph_mat: &[Vec<usize>]) -> Vec<Vec<usize>> {
     let n = graph_mat.len();
@@ -195,9 +282,9 @@ pub fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
 
 // 木の直径．グラフが閉路を持たないときのみ使える。
 #[allow(unused)]
-pub fn tree_diameter(graph_list: &[Vec<(usize, u64)>]) -> u64 {
+pub fn tree_diameter(graph: &Graph<EdgeWithLength>) -> u64 {
     let start = 0;
-    let d_v = dijkstra(start, graph_list);
+    let d_v = dijkstra(start, graph);
 
     let mut farthest = start;
     let mut d_max = 0;
@@ -210,7 +297,7 @@ pub fn tree_diameter(graph_list: &[Vec<(usize, u64)>]) -> u64 {
 
     let start = farthest;
     let mut d_max = 0;
-    let d_v = dijkstra(start, graph_list);
+    let d_v = dijkstra(start, graph);
     for (_, &d) in d_v.iter().enumerate() {
         if d > d_max {
             d_max = d;

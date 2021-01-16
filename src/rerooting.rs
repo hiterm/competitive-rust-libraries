@@ -1,57 +1,27 @@
+use crate::graph::{Edge, Graph};
+
 // https://algo-logic.info/tree-dp/
 
 pub trait Monoid: Clone + Copy {
     const IDENTITY: Self;
 }
 
-pub struct Graph {
-    g: Vec<Vec<Edge>>,
-}
-
-impl Graph {
-    pub fn new(n: usize) -> Graph {
-        Graph { g: vec![vec![]; n] }
-    }
-
-    pub fn add_edge(&mut self, from: usize, to: usize) {
-        self.g[from].push(Edge::new(to));
-    }
-
-    fn get_edges(&self, v: usize) -> &[Edge] {
-        &self.g[v]
-    }
-
-    fn get_degree(&self, v: usize) -> usize {
-        *&self.g[v].len()
-    }
-}
-
-#[derive(Clone, Copy, Debug)]
-struct Edge {
-    to: usize,
-}
-
-impl Edge {
-    fn new(to: usize) -> Edge {
-        Edge { to }
-    }
-}
-
-struct Rerooting<'a, T, F, G> {
+struct Rerooting<'a, T, E: Edge, F1, F2> {
     dp: Vec<Vec<T>>,
     ans: Vec<T>,
-    graph: &'a Graph,
-    merge: F,
-    add_root: G,
+    graph: &'a Graph<E>,
+    merge: F1,
+    add_root: F2,
 }
 
-impl<'a, T, F, G> Rerooting<'a, T, F, G>
+impl<'a, T, E, F1, F2> Rerooting<'a, T, E, F1, F2>
 where
     T: Monoid,
-    F: FnMut(T, T) -> T,
-    G: FnMut(T) -> T,
+    E: Edge,
+    F1: FnMut(T, T) -> T,
+    F2: FnMut(T) -> T,
 {
-    fn new(n: usize, graph: &Graph, merge: F, add_root: G) -> Rerooting<T, F, G> {
+    fn new(n: usize, graph: &Graph<E>, merge: F1, add_root: F2) -> Rerooting<T, E, F1, F2> {
         let dp = vec![vec![]; n];
         let ans = vec![T::IDENTITY; n];
         Rerooting {
@@ -70,10 +40,10 @@ where
 
     fn dfs(&mut self, v: usize, p: Option<usize>) -> T {
         let mut dp_cum = T::IDENTITY;
-        let deg = self.graph.get_degree(v);
+        let deg = self.graph.degree(v);
         self.dp[v] = vec![T::IDENTITY; deg];
-        for (i, edge) in self.graph.get_edges(v).iter().copied().enumerate() {
-            let next = edge.to;
+        for (i, edge) in self.graph.edges(v).iter().cloned().enumerate() {
+            let next = edge.to();
             if matches!(p, Some(p) if next == p) {
                 continue;
             }
@@ -85,10 +55,10 @@ where
     }
 
     fn bfs(&mut self, v: usize, dp_p: T, p: Option<usize>) {
-        let deg = self.graph.get_degree(v);
+        let deg = self.graph.degree(v);
         if let Some(p) = p {
-            for (i, edge) in self.graph.get_edges(v).iter().copied().enumerate() {
-                if edge.to == p {
+            for (i, edge) in self.graph.edges(v).iter().cloned().enumerate() {
+                if edge.to() == p {
                     self.dp[v][i] = dp_p;
                 }
             }
@@ -105,8 +75,8 @@ where
 
         self.ans[v] = (self.add_root)(dp_l[deg]);
 
-        for (i, edge) in self.graph.get_edges(v).iter().copied().enumerate() {
-            let next = edge.to;
+        for (i, edge) in self.graph.edges(v).iter().cloned().enumerate() {
+            let next = edge.to();
             if matches!(p, Some(p) if next == p) {
                 continue;
             }
@@ -117,11 +87,12 @@ where
     }
 }
 
-pub fn rerooting<T, F, G>(n: usize, graph: &Graph, merge: F, add_root: G) -> Vec<T>
+pub fn rerooting<T, E, F1, F2>(n: usize, graph: &Graph<E>, merge: F1, add_root: F2) -> Vec<T>
 where
     T: Monoid,
-    F: FnMut(T, T) -> T,
-    G: FnMut(T) -> T,
+    E: Edge,
+    F1: FnMut(T, T) -> T,
+    F2: FnMut(T) -> T,
 {
     let mut rerooting = Rerooting::new(n, graph, merge, add_root);
     rerooting.build();
@@ -131,6 +102,8 @@ where
 #[cfg(test)]
 mod tests {
     use std::cmp;
+
+    use crate::graph::SimpleEdge;
 
     use super::*;
 
@@ -157,8 +130,8 @@ mod tests {
         for (a, b) in edges {
             let a = a - 1;
             let b = b - 1;
-            graph.add_edge(a, b);
-            graph.add_edge(b, a);
+            graph.add_edge(a, SimpleEdge::new(b));
+            graph.add_edge(b, SimpleEdge::new(a));
         }
         let merge = |x, y| {
             let Dp { value: v1 } = x;
