@@ -1,34 +1,7 @@
 // https://algo-logic.info/tree-dp/
 
-// 問題ごとに書き換え
-#[derive(Clone, Copy, Debug)]
-struct Dp {
-    value: i64,
-}
-
-impl Dp {
-    fn new(value: i64) -> Dp {
-        Dp { value }
-    }
-}
-
-impl Monoid for Dp {
-    const IDENTITY: Self = Dp { value: -1 };
-}
-
-impl Rerootable for Dp {
-    fn add_root(&self) -> Dp {
-        Dp::new(self.value + 1)
-    }
-}
-// 書き換えここまで
-
 pub trait Monoid: Clone + Copy {
     const IDENTITY: Self;
-}
-
-pub trait Rerootable: Monoid {
-    fn add_root(&self) -> Self;
 }
 
 pub struct Graph {
@@ -64,19 +37,21 @@ impl Edge {
     }
 }
 
-struct Rerooting<'a, T, F> {
+struct Rerooting<'a, T, F, G> {
     dp: Vec<Vec<T>>,
     ans: Vec<T>,
     graph: &'a Graph,
     merge: F,
+    add_root: G,
 }
 
-impl<'a, T, F> Rerooting<'a, T, F>
+impl<'a, T, F, G> Rerooting<'a, T, F, G>
 where
-    T: Rerootable,
+    T: Monoid,
     F: FnMut(T, T) -> T,
+    G: FnMut(T) -> T,
 {
-    fn new(n: usize, graph: &Graph, merge: F) -> Rerooting<T, F> {
+    fn new(n: usize, graph: &Graph, merge: F, add_root: G) -> Rerooting<T, F, G> {
         let dp = vec![vec![]; n];
         let ans = vec![T::IDENTITY; n];
         Rerooting {
@@ -84,6 +59,7 @@ where
             ans,
             graph,
             merge,
+            add_root,
         }
     }
 
@@ -105,7 +81,7 @@ where
             dp_cum = (self.merge)(dp_cum, self.dp[v][i]);
         }
 
-        dp_cum.add_root()
+        (self.add_root)(dp_cum)
     }
 
     fn bfs(&mut self, v: usize, dp_p: T, p: Option<usize>) {
@@ -127,7 +103,7 @@ where
             dp_r[i] = (self.merge)(dp_r[i + 1], self.dp[v][i]);
         }
 
-        self.ans[v] = dp_l[deg].add_root();
+        self.ans[v] = (self.add_root)(dp_l[deg]);
 
         for (i, edge) in self.graph.get_edges(v).iter().copied().enumerate() {
             let next = edge.to;
@@ -135,17 +111,19 @@ where
                 continue;
             }
             let merged = (self.merge)(dp_l[i], dp_r[i + 1]);
-            self.bfs(next, merged.add_root(), Some(v));
+            let add_rooted = (self.add_root)(merged);
+            self.bfs(next, add_rooted, Some(v));
         }
     }
 }
 
-pub fn rerooting<T, F>(n: usize, graph: &Graph, merge: F) -> Vec<T>
+pub fn rerooting<T, F, G>(n: usize, graph: &Graph, merge: F, add_root: G) -> Vec<T>
 where
-    T: Rerootable,
+    T: Monoid,
     F: FnMut(T, T) -> T,
+    G: FnMut(T) -> T,
 {
-    let mut rerooting = Rerooting::new(n, graph, merge);
+    let mut rerooting = Rerooting::new(n, graph, merge, add_root);
     rerooting.build();
     rerooting.ans
 }
@@ -155,6 +133,21 @@ mod tests {
     use std::cmp;
 
     use super::*;
+
+    #[derive(Clone, Copy, Debug)]
+    struct Dp {
+        value: i64,
+    }
+
+    impl Dp {
+        fn new(value: i64) -> Dp {
+            Dp { value }
+        }
+    }
+
+    impl Monoid for Dp {
+        const IDENTITY: Self = Dp { value: -1 };
+    }
 
     #[test]
     fn rerooting1_test() {
@@ -172,8 +165,9 @@ mod tests {
             let Dp { value: v2 } = y;
             Dp::new(cmp::max(v1, v2))
         };
+        let add_root = |x: Dp| Dp::new(x.value + 1);
 
-        let ans: Vec<Dp> = rerooting(n, &graph, merge);
+        let ans: Vec<Dp> = rerooting(n, &graph, merge, add_root);
         assert_eq!(
             vec![3, 4, 2, 3, 3, 4],
             ans.iter().map(|dp| dp.value).collect::<Vec<_>>()
