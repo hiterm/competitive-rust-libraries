@@ -20,7 +20,7 @@ fn main() {
         for j in 0..n {
             if graph_mat[i][j] == 1 {
                 graph_list[i].push(j);
-                graph.add_edge(i, j);
+                graph.add_edge(i, SimpleEdge::new(j));
             }
         }
     }

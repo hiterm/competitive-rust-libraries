@@ -1,20 +1,30 @@
+pub trait Edge: Clone {
+    fn to(&self) -> usize;
+}
+
 #[derive(Clone, Debug)]
-pub struct Edge {
+pub struct SimpleEdge {
     to: usize,
 }
 
-impl Edge {
-    fn new(to: usize) -> Edge {
-        Edge { to }
+impl SimpleEdge {
+    pub fn new(to: usize) -> SimpleEdge {
+        SimpleEdge { to }
     }
 }
 
-pub struct Graph {
-    adj_list: Vec<Vec<Edge>>,
+impl Edge for SimpleEdge {
+    fn to(&self) -> usize {
+        self.to
+    }
 }
 
-impl Graph {
-    pub fn new(n: usize) -> Graph {
+pub struct Graph<E> {
+    adj_list: Vec<Vec<E>>,
+}
+
+impl<E: Edge> Graph<E> {
+    pub fn new(n: usize) -> Graph<E> {
         Graph {
             adj_list: vec![vec![]; n],
         }
@@ -24,11 +34,11 @@ impl Graph {
         self.adj_list.len()
     }
 
-    pub fn add_edge(&mut self, from: usize, to: usize) {
-        self.adj_list[from].push(Edge::new(to));
+    pub fn add_edge(&mut self, from: usize, edge: E) {
+        self.adj_list[from].push(edge);
     }
 
-    pub fn edges(&self, from: usize) -> &[Edge] {
+    pub fn edges(&self, from: usize) -> &[E] {
         &self.adj_list[from]
     }
 
@@ -39,7 +49,7 @@ impl Graph {
             let s = self
                 .edges(v)
                 .iter()
-                .map(|x| x.to.to_string())
+                .map(|x| x.to().to_string())
                 .collect::<Vec<_>>()
                 .join(", ");
             eprintln!("    [{}],", s);
@@ -49,7 +59,7 @@ impl Graph {
 }
 
 // 幅優先探索
-pub fn bfs(start: usize, graph: &Graph) {
+pub fn bfs<E: Edge>(start: usize, graph: &Graph<E>) {
     use std::collections::VecDeque;
 
     let n = graph.len();
@@ -65,7 +75,7 @@ pub fn bfs(start: usize, graph: &Graph) {
         // replace it
         eprintln!("visit {}", vertex);
         for edge in graph.edges(vertex) {
-            let next = edge.to;
+            let next = edge.to();
             if !visited[next] {
                 visited[next] = true;
                 queue.push_back(next);
@@ -102,7 +112,7 @@ where
 }
 
 // 深さ優先探索
-pub fn dfs(start: usize, graph: &Graph) {
+pub fn dfs<E: Edge>(start: usize, graph: &Graph<E>) {
     let n = graph.len();
 
     let mut visited = vec![false; n];
@@ -115,7 +125,7 @@ pub fn dfs(start: usize, graph: &Graph) {
         let vertex = stack.pop().unwrap();
         eprintln!("visit {}", vertex);
         for edge in graph.edges(vertex) {
-            let next = edge.to;
+            let next = edge.to();
             if !visited[next] {
                 visited[next] = true;
                 stack.push(next);
@@ -125,20 +135,20 @@ pub fn dfs(start: usize, graph: &Graph) {
 }
 
 // 深さ優先探索（再帰）
-pub fn dfs_recursive(start: usize, graph: &Graph) {
+pub fn dfs_recursive<E: Edge>(start: usize, graph: &Graph<E>) {
     let n = graph.len();
     let mut visited = vec![false; n];
 
     dfs_aux(start, graph, &mut visited);
 }
 // 補助関数
-pub fn dfs_aux(start: usize, graph: &Graph, visited: &mut Vec<bool>) {
+pub fn dfs_aux<E: Edge>(start: usize, graph: &Graph<E>, visited: &mut Vec<bool>) {
     visited[start] = true;
 
     eprintln!("visit {}", start);
 
     for edge in graph.edges(start) {
-        let next = edge.to;
+        let next = edge.to();
         if !visited[next] {
             dfs_aux(next, &graph, visited);
         }
