@@ -2,23 +2,6 @@ pub trait Edge: Clone {
     fn to(&self) -> usize;
 }
 
-#[derive(Clone, Debug)]
-pub struct SimpleEdge {
-    to: usize,
-}
-
-impl SimpleEdge {
-    pub fn new(to: usize) -> SimpleEdge {
-        SimpleEdge { to }
-    }
-}
-
-impl Edge for SimpleEdge {
-    fn to(&self) -> usize {
-        self.to
-    }
-}
-
 pub struct Graph<E: Edge> {
     adj_list: Vec<Vec<E>>,
 }
@@ -62,6 +45,23 @@ impl<E: Edge> Graph<E> {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct SimpleEdge {
+    to: usize,
+}
+
+impl SimpleEdge {
+    pub fn new(to: usize) -> SimpleEdge {
+        SimpleEdge { to }
+    }
+}
+
+impl Edge for SimpleEdge {
+    fn to(&self) -> usize {
+        self.to
+    }
+}
+
 pub type SimpleGraph = Graph<SimpleEdge>;
 
 impl SimpleGraph {
@@ -69,6 +69,8 @@ impl SimpleGraph {
         self.add_edge(from, SimpleEdge::new(to));
     }
 }
+
+//--------------------------------------
 
 // 幅優先探索
 pub fn bfs<E: Edge>(start: usize, graph: &Graph<E>) {
@@ -230,7 +232,10 @@ pub fn dijkstra(start: usize, graph: &Graph<EdgeWithLength>) -> Vec<u64> {
 
     while let Some(Reverse((d, u))) = queue.pop() {
         for edge in graph.edges(u) {
-            let &EdgeWithLength { to: adj, len: edge_len } = edge;
+            let &EdgeWithLength {
+                to: adj,
+                len: edge_len,
+            } = edge;
             let alt = d + edge_len;
             if distances[adj] > alt {
                 distances[adj] = alt;
