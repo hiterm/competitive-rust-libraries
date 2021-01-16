@@ -1,4 +1,4 @@
-use competitive_rust_libraries::multiset::BTreeMultiSet;
+use competitive_rust_libraries::btree_multiset::BTreeMultiSet;
 
 fn main() {
     let mut set = BTreeMultiSet::new();
