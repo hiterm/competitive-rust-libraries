@@ -31,6 +31,21 @@ impl Graph {
     pub fn edges(&self, from: usize) -> &[Edge] {
         &self.adj_list[from]
     }
+
+    pub fn debug_print(&self) {
+        let n = self.len();
+        eprintln!("[");
+        for v in 0..n {
+            let s = self
+                .edges(v)
+                .iter()
+                .map(|x| x.to.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
+            eprintln!("    [{}],", s);
+        }
+        eprintln!("]");
+    }
 }
 
 // 幅優先探索
