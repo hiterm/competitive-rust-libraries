@@ -1,8 +1,43 @@
+#[derive(Clone, Debug)]
+pub struct Edge {
+    to: usize,
+}
+
+impl Edge {
+    fn new(to: usize) -> Edge {
+        Edge { to }
+    }
+}
+
+pub struct Graph {
+    adj_list: Vec<Vec<Edge>>,
+}
+
+impl Graph {
+    pub fn new(n: usize) -> Graph {
+        Graph {
+            adj_list: vec![vec![]; n],
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.adj_list.len()
+    }
+
+    pub fn add_edge(&mut self, from: usize, to: usize) {
+        self.adj_list[from].push(Edge::new(to));
+    }
+
+    pub fn edges(&self, from: usize) -> &[Edge] {
+        &self.adj_list[from]
+    }
+}
+
 // 幅優先探索
-pub fn bfs(start: usize, graph_list: &[Vec<usize>]) {
+pub fn bfs(start: usize, graph: &Graph) {
     use std::collections::VecDeque;
 
-    let n = graph_list.len();
+    let n = graph.len();
 
     let mut visited = vec![false; n];
     let mut queue: VecDeque<usize> = VecDeque::new();
@@ -12,8 +47,10 @@ pub fn bfs(start: usize, graph_list: &[Vec<usize>]) {
 
     while !queue.is_empty() {
         let vertex = queue.pop_front().unwrap();
+        // replace it
         eprintln!("visit {}", vertex);
-        for &next in &graph_list[vertex] {
+        for edge in graph.edges(vertex) {
+            let next = edge.to;
             if !visited[next] {
                 visited[next] = true;
                 queue.push_back(next);
@@ -50,8 +87,8 @@ where
 }
 
 // 深さ優先探索
-pub fn dfs(start: usize, graph_list: &[Vec<usize>]) {
-    let n = graph_list.len();
+pub fn dfs(start: usize, graph: &Graph) {
+    let n = graph.len();
 
     let mut visited = vec![false; n];
     let mut stack: Vec<usize> = Vec::new();
@@ -62,7 +99,8 @@ pub fn dfs(start: usize, graph_list: &[Vec<usize>]) {
     while !stack.is_empty() {
         let vertex = stack.pop().unwrap();
         eprintln!("visit {}", vertex);
-        for &next in &graph_list[vertex] {
+        for edge in graph.edges(vertex) {
+            let next = edge.to;
             if !visited[next] {
                 visited[next] = true;
                 stack.push(next);
@@ -72,21 +110,22 @@ pub fn dfs(start: usize, graph_list: &[Vec<usize>]) {
 }
 
 // 深さ優先探索（再帰）
-pub fn dfs_recursive(start: usize, graph_list: &[Vec<usize>]) {
-    let n = graph_list.len();
+pub fn dfs_recursive(start: usize, graph: &Graph) {
+    let n = graph.len();
     let mut visited = vec![false; n];
 
-    dfs_aux(start, graph_list, &mut visited);
+    dfs_aux(start, graph, &mut visited);
 }
 // 補助関数
-pub fn dfs_aux(start: usize, graph_list: &[Vec<usize>], visited: &mut Vec<bool>) {
+pub fn dfs_aux(start: usize, graph: &Graph, visited: &mut Vec<bool>) {
     visited[start] = true;
 
     eprintln!("visit {}", start);
 
-    for &next in &graph_list[start] {
+    for edge in graph.edges(start) {
+        let next = edge.to;
         if !visited[next] {
-            dfs_aux(next, &graph_list, visited);
+            dfs_aux(next, &graph, visited);
         }
     }
 }
@@ -147,7 +186,7 @@ pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
     distances
 }
 
-// Warshall-Floyd法
+// Warshall-Floyd法(長さ1)
 #[allow(unused)]
 pub fn warshall_floyd(graph_mat: &[Vec<usize>]) -> Vec<Vec<usize>> {
     let n = graph_mat.len();

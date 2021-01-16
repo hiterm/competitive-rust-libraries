@@ -15,25 +15,27 @@ fn main() {
     eprintln!("{:?}", graph_mat);
 
     let mut graph_list = vec![vec![]; n];
+    let mut graph = Graph::new(n);
     for i in 0..n {
         for j in 0..n {
             if graph_mat[i][j] == 1 {
                 graph_list[i].push(j);
+                graph.add_edge(i, j);
             }
         }
     }
     eprintln!("{:?}", graph_list);
 
     println!("start bfs");
-    bfs(0, &graph_list);
+    bfs(0, &graph);
     println!();
 
     println!("start dfs");
-    dfs(0, &graph_list);
+    dfs(0, &graph);
     println!();
 
     println!("start dfs recursive");
-    dfs_recursive(0, &graph_list);
+    dfs_recursive(0, &graph);
 
     println!("start dijkstra");
     let mut graph_with_distance = vec![vec![]; n];
