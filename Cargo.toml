@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 ac-library-rs = { git = "https://github.com/rust-lang-ja/ac-library-rs" }
+proconio = "0.4.1"

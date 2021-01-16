@@ -1,21 +1,21 @@
-struct UnionFind {
+pub struct UnionFind {
     parent: Vec<usize>,
     rank: Vec<usize>,
 }
 
 impl UnionFind {
-    fn new(n: usize) -> UnionFind {
+    pub fn new(n: usize) -> UnionFind {
         let mut parent = vec![];
         for i in 0..n {
             parent.push(i);
         }
         UnionFind {
-            parent: parent,
+            parent,
             rank: vec![0; n],
         }
     }
 
-    fn find(&mut self, i: usize) -> usize {
+    pub fn find(&mut self, i: usize) -> usize {
         if self.parent[i] == i {
             i
         } else {
@@ -25,7 +25,7 @@ impl UnionFind {
         }
     }
 
-    fn unite(&mut self, i: usize, j: usize) {
+    pub fn unite(&mut self, i: usize, j: usize) {
         let i = self.find(i);
         let j = self.find(j);
         if i == j {
@@ -42,7 +42,7 @@ impl UnionFind {
         }
     }
 
-    fn same(&mut self, i: usize, j: usize) -> bool {
+    pub fn same(&mut self, i: usize, j: usize) -> bool {
         self.find(i) == self.find(j)
     }
 }

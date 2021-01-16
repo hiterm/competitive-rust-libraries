@@ -4,6 +4,7 @@ fn main() {
     let (num_vertices, num_edges): (usize, usize) = {
         let mut s = String::new();
         std::io::stdin().read_line(&mut s).unwrap();
+        #[allow(deprecated)]
         let s = s.trim_right().to_owned();
         let mut ws = s.split_whitespace();
         let a = ws.next().unwrap().parse().unwrap();
@@ -17,6 +18,7 @@ fn main() {
             let (from, to, cap): (usize, usize, usize) = {
                 let mut s = String::new();
                 std::io::stdin().read_line(&mut s).unwrap();
+                #[allow(deprecated)]
                 let s = s.trim_right().to_owned();
                 let mut ws = s.split_whitespace();
                 let a = ws.next().unwrap().parse().unwrap();
@@ -131,11 +133,7 @@ fn bipartite_matching(x: usize, y: usize, edges: &Vec<(usize, usize)>) -> usize 
 
 fn add_edge(from: usize, to: usize, cap: usize, graph: &mut Graph) {
     let l = graph[to].len();
-    graph[from].push(Edge {
-        to: to,
-        cap: cap,
-        rev: l,
-    });
+    graph[from].push(Edge { to, cap, rev: l });
     let l = graph[from].len();
     graph[to].push(Edge {
         to: from,

@@ -4,6 +4,7 @@ macro_rules! iter_prod {
     };
 }
 
+#[allow(unused)]
 fn main() {
     println!("{:?}", iter_prod!(0..3, 0..3).collect::<Vec<_>>())
 }

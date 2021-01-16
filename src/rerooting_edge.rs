@@ -13,6 +13,7 @@ macro_rules! multi_vec {
 }
 //}}}
 
+#[allow(unused)]
 fn main() {
     input! {
         n: usize,

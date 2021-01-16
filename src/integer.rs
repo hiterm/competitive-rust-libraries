@@ -1,4 +1,4 @@
-fn bit_len(n: usize) -> usize {
+pub fn bit_len(n: usize) -> usize {
     let mut len = 0;
     loop {
         if (1 << len) > n {
@@ -10,7 +10,7 @@ fn bit_len(n: usize) -> usize {
     len
 }
 
-fn bit_sum(n: usize) -> usize {
+pub fn bit_sum(n: usize) -> usize {
     let mut ret = 0;
     let mut bit = 1;
     while bit <= n {

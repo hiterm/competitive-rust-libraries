@@ -1,9 +1,9 @@
-struct Adjacent {
+pub struct Adjacent {
     adj_points: Vec<(usize, usize)>,
 }
 
 impl Adjacent {
-    fn new(point: (usize, usize), size: (usize, usize)) -> Adjacent {
+    pub fn new(point: (usize, usize), size: (usize, usize)) -> Adjacent {
         const DIFFS: [(i64, i64); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];
 
         let mut adj_points = vec![];

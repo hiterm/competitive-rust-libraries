@@ -1,5 +1,7 @@
+use ac_library_rs::FenwickTree;
+
 // Not well tested
-fn inversion_number(v: &[usize], max: usize) -> usize {
+pub fn inversion_number(v: &[usize], max: usize) -> usize {
     let mut inv = 0;
     let mut bit = FenwickTree::new(max + 1, 0);
     for (i, vi) in v.iter().copied().enumerate() {

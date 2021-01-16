@@ -1,5 +1,7 @@
+use std::ops::Add;
+
 #[derive(Debug, Copy, Clone)]
-struct OneBased(usize);
+pub struct OneBased(usize);
 
 impl OneBased {
     fn new(n: usize) -> OneBased {
@@ -9,12 +11,12 @@ impl OneBased {
         OneBased(n)
     }
 
-    fn unwrap(self) -> usize {
+    pub fn unwrap(self) -> usize {
         let OneBased(n) = self;
         n
     }
 
-    fn index(self) -> usize {
+    pub fn index(self) -> usize {
         let OneBased(n) = self;
         n - 1
     }

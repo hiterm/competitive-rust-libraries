@@ -5,6 +5,7 @@ macro_rules! getl {
         {
             let mut s = String::new();
             std::io::stdin().read_line(&mut s).unwrap();
+            #[allow(deprecated)]
             let s = s.trim_right();
             let mut ws = s.split_whitespace();
             ($(ws.next().unwrap().parse::<$t>().unwrap()),*)
@@ -17,6 +18,7 @@ macro_rules! getl_vec {
     ( $t:ty ) => {{
         let mut s = String::new();
         std::io::stdin().read_line(&mut s).unwrap();
+        #[allow(deprecated)]
         let s = s.trim_right();
         s.split_whitespace()
             .map(|x| x.parse().unwrap())
@@ -25,6 +27,7 @@ macro_rules! getl_vec {
 }
 //}}}
 
+#[allow(unused)]
 fn main() {
     let n = getl!(usize);
     let mut graph: Vec<Vec<usize>> = vec![vec![]; n];
@@ -75,12 +78,10 @@ impl LcaBuilder {
                 (None, None) => None,
             }
         };
-        let segtree = SegmentTree::build(&vs.iter().map(|x| Some(*x)).collect(), Box::new(op), None);
+        let segtree =
+            SegmentTree::build(&vs.iter().map(|x| Some(*x)).collect(), Box::new(op), None);
 
-        let lca = Lca {
-            id,
-            segtree,
-        };
+        let lca = Lca { id, segtree };
 
         lca
     }

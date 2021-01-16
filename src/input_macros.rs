@@ -23,6 +23,7 @@ macro_rules! getl_vec {
     };
 }
 
+#[allow(unused)]
 fn main() {
     let (a, b) = getl!(usize, usize);
     let v = getl_vec!(usize);

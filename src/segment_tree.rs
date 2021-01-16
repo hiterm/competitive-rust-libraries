@@ -27,6 +27,7 @@ macro_rules! getl_vec {
 
 const INF: u64 = (1 << 31) - 1;
 
+#[allow(unused)]
 fn main() {
     const UPDATE: u64 = 0;
     const FIND: u64 = 1;
