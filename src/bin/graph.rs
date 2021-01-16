@@ -39,15 +39,15 @@ fn main() {
     dfs_recursive(0, &graph);
 
     println!("start dijkstra");
-    let mut graph_with_distance = vec![vec![]; n];
+    let mut graph_with_length = Graph::new(n);
     for i in 0..n {
         for j in 0..n {
             if graph_mat[i][j] == 1 {
-                graph_with_distance[i].push((j, 1));
+                graph_with_length.add_edge(i, EdgeWithLength::new(j, 1));
             }
         }
     }
-    let distances = dijkstra(0, &graph_with_distance);
+    let distances = dijkstra(0, &graph_with_length);
     println!("{:?}", distances);
 
     // graph shape:
@@ -61,7 +61,7 @@ fn main() {
     println!("Topological Sort");
     match topological_sort(&graph_list2) {
         Some(v) => println!("{:?}", v),
-        None => println!("Graph has a closed path.")
+        None => println!("Graph has a closed path."),
     }
 
     // graph shape:
@@ -75,6 +75,6 @@ fn main() {
     println!("Topological Sort");
     match topological_sort(&graph_list3) {
         Some(v) => println!("{:?}", v),
-        None => println!("Graph has a closed path.")
+        None => println!("Graph has a closed path."),
     }
 }

@@ -19,7 +19,7 @@ impl Edge for SimpleEdge {
     }
 }
 
-pub struct Graph<E> {
+pub struct Graph<E: Edge> {
     adj_list: Vec<Vec<E>>,
 }
 
@@ -184,12 +184,30 @@ pub fn dfs_closure_aux<F>(
     }
 }
 
+#[derive(Clone)]
+pub struct EdgeWithLength {
+    to: usize,
+    len: u64,
+}
+
+impl EdgeWithLength {
+    pub fn new(to: usize, len: u64) -> EdgeWithLength {
+        EdgeWithLength { to, len }
+    }
+}
+
+impl Edge for EdgeWithLength {
+    fn to(&self) -> usize {
+        self.to
+    }
+}
+
 // ダイクストラ法
-pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
+pub fn dijkstra(start: usize, graph: &Graph<EdgeWithLength>) -> Vec<u64> {
     use std::cmp::Reverse;
     use std::collections::BinaryHeap;
 
-    let n = graph_list.len();
+    let n = graph.len();
     let mut distances = vec![std::u64::MAX >> 2; n];
     distances[start] = 0;
 
@@ -199,11 +217,12 @@ pub fn dijkstra(start: usize, graph_list: &[Vec<(usize, u64)>]) -> Vec<u64> {
     queue.push(Reverse((0, start)));
 
     while let Some(Reverse((d, u))) = queue.pop() {
-        for &(v, edge_d) in &graph_list[u] {
-            let alt = d + edge_d;
-            if distances[v] > alt {
-                distances[v] = alt;
-                queue.push(Reverse((alt, v)))
+        for edge in graph.edges(u) {
+            let &EdgeWithLength { to: adj, len: edge_len } = edge;
+            let alt = d + edge_len;
+            if distances[adj] > alt {
+                distances[adj] = alt;
+                queue.push(Reverse((alt, adj)))
             }
         }
     }
@@ -259,9 +278,9 @@ pub fn graph_diameter(graph_mat: &[Vec<usize>]) -> usize {
 
 // 木の直径．グラフが閉路を持たないときのみ使える。
 #[allow(unused)]
-pub fn tree_diameter(graph_list: &[Vec<(usize, u64)>]) -> u64 {
+pub fn tree_diameter(graph: &Graph<EdgeWithLength>) -> u64 {
     let start = 0;
-    let d_v = dijkstra(start, graph_list);
+    let d_v = dijkstra(start, graph);
 
     let mut farthest = start;
     let mut d_max = 0;
@@ -274,7 +293,7 @@ pub fn tree_diameter(graph_list: &[Vec<(usize, u64)>]) -> u64 {
 
     let start = farthest;
     let mut d_max = 0;
-    let d_v = dijkstra(start, graph_list);
+    let d_v = dijkstra(start, graph);
     for (_, &d) in d_v.iter().enumerate() {
         if d > d_max {
             d_max = d;
