@@ -40,7 +40,6 @@ where
     }
 }
 
-
 // MapMonoid
 
 pub trait SemiGroupMapMonoid {
@@ -89,4 +88,3 @@ where
         }
     }
 }
-

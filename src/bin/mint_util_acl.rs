@@ -6,4 +6,3 @@ fn main() {
     let a = mint_util.binom_coef(4, 2);
     println!("{}", a);
 }
-

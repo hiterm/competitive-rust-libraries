@@ -1,5 +1,6 @@
 pub mod binary_search;
 pub mod bit;
+pub mod btree_multiset;
 pub mod btreeset_util;
 pub mod chmax_chmin;
 pub mod cumulative_sum;
@@ -15,7 +16,6 @@ pub mod lca;
 pub mod max_flow;
 pub mod mint_util_acl;
 pub mod multi_vec;
-pub mod btree_multiset;
 pub mod number_theory;
 pub mod one_based;
 pub mod rerooting;

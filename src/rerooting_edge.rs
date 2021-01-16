@@ -85,7 +85,9 @@ mod rorooting {
 
     impl Graph {
         pub fn new(n: usize) -> Graph {
-            Graph { adj_list: vec![vec![]; n] }
+            Graph {
+                adj_list: vec![vec![]; n],
+            }
         }
 
         pub fn add_edge(&mut self, from: usize, to: usize, value: i64, rev_value: i64) {
