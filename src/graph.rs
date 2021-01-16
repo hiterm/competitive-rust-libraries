@@ -42,6 +42,10 @@ impl<E: Edge> Graph<E> {
         &self.adj_list[from]
     }
 
+    pub fn degree(&self, v: usize) -> usize {
+        *&self.adj_list[v].len()
+    }
+
     pub fn debug_print(&self) {
         let n = self.len();
         eprintln!("[");
