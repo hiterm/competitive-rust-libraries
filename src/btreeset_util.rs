@@ -5,6 +5,8 @@ trait BTreeSetUtil<T> {
     fn get_min(&self) -> Option<&T>;
     fn pop_max(&mut self) -> Option<T>;
     fn pop_min(&mut self) -> Option<T>;
+    fn get_range_max<R: RangeBounds<T>>(&self, range: R) -> Option<&T>;
+    fn get_range_min<R: RangeBounds<T>>(&self, range: R) -> Option<&T>;
 }
 
 impl<T> BTreeSetUtil<T> for BTreeSet<T>
@@ -33,6 +35,14 @@ where
             None => None,
             Some(min) => self.take(&min),
         }
+    }
+
+    fn get_range_max<R: RangeBounds<T>>(&self, range: R) -> Option<&T> {
+        self.range(range).next_back()
+    }
+
+    fn get_range_min<R: RangeBounds<T>>(&self, range: R) -> Option<&T> {
+        self.range(range).next()
     }
 }
 
