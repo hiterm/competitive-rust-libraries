@@ -13,6 +13,7 @@ pub mod integer;
 pub mod inversion_number;
 pub mod iter;
 pub mod lca;
+pub mod matrix;
 pub mod max_flow;
 pub mod mint_util_acl;
 pub mod multi_vec;
