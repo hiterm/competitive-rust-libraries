@@ -84,8 +84,7 @@ pub fn bfs<E: Edge>(start: usize, graph: &Graph<E>) {
     visited[start] = true;
     queue.push_back(start);
 
-    while !queue.is_empty() {
-        let vertex = queue.pop_front().unwrap();
+    while let Some(vertex) = queue.pop_front() {
         // replace it
         eprintln!("visit {}", vertex);
         for edge in graph.edges(vertex) {
@@ -113,8 +112,7 @@ where
     visited[start] = true;
     queue.push_back(start);
 
-    while !queue.is_empty() {
-        let vertex = queue.pop_front().unwrap();
+    while let Some(vertex) = queue.pop_front() {
         for &next in &graph_list[vertex] {
             if !visited[next] {
                 func(vertex, next);
@@ -135,8 +133,7 @@ pub fn dfs<E: Edge>(start: usize, graph: &Graph<E>) {
     visited[start] = true;
     stack.push(start);
 
-    while !stack.is_empty() {
-        let vertex = stack.pop().unwrap();
+    while let Some(vertex) = stack.pop() {
         eprintln!("visit {}", vertex);
         for edge in graph.edges(vertex) {
             let next = edge.to();
@@ -330,9 +327,7 @@ pub fn is_bipartite_graph(graph_list: &[Vec<usize>]) -> bool {
     let start = 0;
     stack.push((start, true));
 
-    while !stack.is_empty() {
-        let (vertex, color) = stack.pop().unwrap();
-
+    while let Some((vertex, color)) = stack.pop() {
         colors[vertex] = Some(color);
 
         for &next in &graph_list[vertex] {
