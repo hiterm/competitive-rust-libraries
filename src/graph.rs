@@ -123,6 +123,35 @@ where
     }
 }
 
+pub fn bfs_distance<E: Edge>(start: usize, graph: &Graph<E>) -> Vec<u64> {
+    use std::collections::VecDeque;
+
+    let n = graph.len();
+
+    let mut visited = vec![false; n];
+    let mut queue: VecDeque<usize> = VecDeque::new();
+
+    visited[start] = true;
+    queue.push_back(start);
+
+    const INF: u64 = std::u64::MAX >> 2;
+    let mut distances = vec![INF; graph.len()];
+    distances[start] = 0;
+
+    while let Some(vertex) = queue.pop_front() {
+        for edge in graph.edges(vertex) {
+            let next = edge.to();
+            if !visited[next] {
+                visited[next] = true;
+                distances[next] = distances[vertex] + 1;
+                queue.push_back(next);
+            }
+        }
+    }
+
+    distances
+}
+
 // 深さ優先探索
 pub fn dfs<E: Edge>(start: usize, graph: &Graph<E>) {
     let n = graph.len();
