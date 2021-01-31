@@ -67,19 +67,27 @@ pub fn prime_factor(n: u64) -> HashMap<u64, u64> {
     factors
 }
 
-pub fn divisors_vec(n: u64) -> Vec<u64> {
-    prime_factor(n).iter().fold(vec![1], |acc, (&p, &pow)| {
-        (0..=pow)
-            .flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32)))
-            .collect()
-    })
+fn divisors(n: u64) -> Vec<u64> {
+    let mut ret = vec![];
+
+    for k in 1..=n {
+        if k * k > n {
+            break;
+        }
+
+        if n % k == 0 {
+            ret.push(k);
+            if n / k != k {
+                ret.push(n / k);
+            }
+        }
+    }
+
+    ret
 }
 
-pub fn divisors_set(n: u64) -> HashSet<u64> {
-    let mut set = HashSet::new();
-    set.insert(1);
-
-    prime_factor(n).iter().fold(set, |acc, (&p, &pow)| {
+pub fn divisors_using_prime_factor(n: u64) -> Vec<u64> {
+    prime_factor(n).iter().fold(vec![1], |acc, (&p, &pow)| {
         (0..=pow)
             .flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32)))
             .collect()
