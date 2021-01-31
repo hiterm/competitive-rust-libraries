@@ -67,7 +67,7 @@ pub fn prime_factor(n: u64) -> HashMap<u64, u64> {
     factors
 }
 
-fn divisors(n: u64) -> Vec<u64> {
+pub fn divisors(n: u64) -> Vec<u64> {
     let mut ret = vec![];
 
     for k in 1..=n {
