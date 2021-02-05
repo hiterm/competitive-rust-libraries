@@ -10,6 +10,12 @@ pub fn bit_len(n: usize) -> usize {
     len
 }
 
+pub fn msb(n: usize) -> usize {
+    assert!(n > 0);
+    bit_len(n) - 1
+}
+
+// Recomment: use count_ones
 pub fn bit_sum(n: usize) -> usize {
     let mut ret = 0;
     let mut bit = 1;
@@ -43,5 +49,14 @@ mod tests {
         assert_eq!(1, bit_len(1));
         assert_eq!(2, bit_len(2));
         assert_eq!(2, bit_len(3));
+        assert_eq!(3, bit_len(4));
+    }
+
+    #[test]
+    fn msb_test() {
+        assert_eq!(0, msb(1));
+        assert_eq!(1, msb(2));
+        assert_eq!(1, msb(3));
+        assert_eq!(2, msb(4));
     }
 }
