@@ -91,6 +91,16 @@ mod tests {
         fn _4() {
             assert_eq!(2, floor_sqrt(4));
         }
+
+        #[test]
+        fn _99_99_99_99_99_99_99() {
+            assert_eq!(9999999, floor_sqrt(99_99_99_99_99_99_99));
+        }
+
+        #[test]
+        fn _1_00_00_00_00_00_00_00() {
+            assert_eq!(10000000, floor_sqrt(1_00_00_00_00_00_00_00));
+        }
     }
 
     mod binary_search {
