@@ -1,5 +1,6 @@
 #![allow(unused)]
 use std::collections::{HashMap, HashSet};
+use maplit::hashmap;
 
 pub fn gcd(a: usize, b: usize) -> usize {
     let c = a % b;
@@ -50,10 +51,13 @@ pub fn prime_sieve(n: usize) -> Vec<u64> {
 }
 
 pub fn prime_factor(n: u64) -> HashMap<u64, u64> {
-    let sqrt = (n as f64).sqrt() as u64;
     let mut rest = n;
     let mut factors = HashMap::new();
-    for d in 2..=sqrt {
+    for d in 2..=n {
+        if d * d > n {
+            break;
+        }
+
         while rest % d == 0 {
             let count = factors.entry(d).or_insert(0);
             *count += 1;
@@ -189,5 +193,15 @@ mod tests {
     #[test]
     fn mod_inv_test() {
         assert_eq!(1, (3 * mod_inv(3, 7)) % 7);
+    }
+
+    #[test]
+    fn prime_factor_5() {
+        assert_eq!(hashmap!{5 => 1}, prime_factor(5));
+    }
+
+    #[test]
+    fn prime_factor_12() {
+        assert_eq!(hashmap!{2 => 2, 3 => 1}, prime_factor(12));
     }
 }
