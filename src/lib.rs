@@ -5,6 +5,7 @@ pub mod btree_multiset;
 pub mod btreeset_util;
 pub mod chmax_chmin;
 pub mod cumulative_sum;
+pub mod decimal;
 pub mod graph;
 pub mod grid;
 pub mod grid_adjacent;
@@ -25,5 +26,3 @@ pub mod segment_tree;
 pub mod semigroup;
 pub mod union_find;
 pub mod vec_utils;
-
-// TODO: Add other modules
