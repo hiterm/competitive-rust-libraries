@@ -26,3 +26,4 @@ pub mod segment_tree;
 pub mod semigroup;
 pub mod union_find;
 pub mod vec_utils;
+pub mod floor_sqrt;
