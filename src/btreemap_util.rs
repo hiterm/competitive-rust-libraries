@@ -27,14 +27,14 @@ where
         self.keys()
             .next_back()
             .cloned()
-            .and_then(|key| self.remove_entry(&key))
+            .and_then(|key| self.remove(&key).map(|value| (key, value)))
     }
 
     fn pop_min_entry(&mut self) -> Option<(K, V)> {
         self.keys()
             .next()
             .cloned()
-            .and_then(|key| self.remove_entry(&key))
+            .and_then(|key| self.remove(&key).map(|value| (key, value)))
     }
 
     fn range_max_entry<R: RangeBounds<K>>(&self, range: R) -> Option<(&K, &V)> {
@@ -48,13 +48,13 @@ where
     fn pop_range_max_entry<R: RangeBounds<K>>(&mut self, range: R) -> Option<(K, V)> {
         self.range_max_entry(range)
             .map(|(key, _value)| key.clone())
-            .and_then(|key| self.remove_entry(&key))
+            .and_then(|key| self.remove(&key).map(|value| (key, value)))
     }
 
     fn pop_range_min_entry<R: RangeBounds<K>>(&mut self, range: R) -> Option<(K, V)> {
         self.range_min_entry(range)
             .map(|(key, _value)| key.clone())
-            .and_then(|key| self.remove_entry(&key))
+            .and_then(|key| self.remove(&key).map(|value| (key, value)))
     }
 }
 
