@@ -338,5 +338,33 @@ pub fn topological_sort(graph_list: &[Vec<usize>]) -> Option<Vec<usize>> {
 
 #[cfg(test)]
 mod tests {
-    // TODO
+    use super::*;
+    mod dijksta {
+        use super::*;
+
+        #[test]
+        fn graph1() {
+            // graph shape:
+            // 0 - 1 - 3
+            //   \
+            //     2
+            let n = 4;
+            let graph_mat = vec![
+                vec![0, 1, 1, 0],
+                vec![1, 0, 0, 1],
+                vec![1, 0, 0, 0],
+                vec![0, 1, 0, 0],
+            ];
+            let mut graph_with_length = Graph::new(n);
+            for i in 0..n {
+                for j in 0..n {
+                    if graph_mat[i][j] == 1 {
+                        graph_with_length.add_edge(i, EdgeWithLength::new(j, 1));
+                    }
+                }
+            }
+            let ds = dijkstra(0, &graph_with_length);
+            assert_eq!(vec![0, 1, 1, 2], ds);
+        }
+    }
 }
