@@ -1,4 +1,4 @@
-use competitive_rust_libraries::{graph::*, graph_struct::{Graph, SimpleGraph}};
+use competitive_rust_libraries::{graph_algorithm::*, graph_struct::{Graph, SimpleGraph}};
 
 fn main() {
     let n = 4;

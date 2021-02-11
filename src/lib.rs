@@ -7,7 +7,7 @@ pub mod chmax_chmin;
 pub mod cumulative_sum;
 pub mod decimal;
 pub mod floor_sqrt;
-pub mod graph;
+pub mod graph_algorithm;
 pub mod graph_struct;
 pub mod grid;
 pub mod grid_adjacent;
