@@ -25,7 +25,7 @@ fn main() {
         }
     }
     eprintln!("{:?}", graph_list);
-    graph.debug_print();
+    eprintln!("{}", graph.to_debug_str());
 
     println!("start bfs");
     bfs(0, &graph);
