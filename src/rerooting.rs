@@ -1,4 +1,4 @@
-use crate::graph::{Edge, Graph};
+use crate::graph_struct::{Edge, Graph};
 
 // https://algo-logic.info/tree-dp/
 
@@ -103,7 +103,7 @@ where
 mod tests {
     use std::cmp;
 
-    use crate::graph::SimpleEdge;
+    use crate::graph_struct::SimpleEdge;
 
     use super::*;
 
