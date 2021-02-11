@@ -2,6 +2,7 @@ pub mod binary_search;
 pub mod bit;
 pub mod bit_ops;
 pub mod btree_multiset;
+pub mod btreemap_util;
 pub mod btreeset_util;
 pub mod chmax_chmin;
 pub mod cumulative_sum;
