@@ -29,9 +29,10 @@ impl<E: Edge> Graph<E> {
         *&self.adj_list[v].len()
     }
 
-    pub fn debug_print(&self) {
+    pub fn to_debug_str(&self) -> String {
         let n = self.len();
-        eprintln!("[");
+        let mut ret = String::new();
+        ret.push_str("[\n");
         for v in 0..n {
             let s = self
                 .edges(v)
@@ -39,9 +40,11 @@ impl<E: Edge> Graph<E> {
                 .map(|x| x.to().to_string())
                 .collect::<Vec<_>>()
                 .join(", ");
-            eprintln!("    [{}],", s);
+            ret.push_str(&format!("    [{}],\n", s));
         }
-        eprintln!("]");
+        ret.push_str("]");
+
+        ret
     }
 }
 
