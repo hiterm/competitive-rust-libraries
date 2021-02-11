@@ -185,6 +185,9 @@ pub fn dijkstra(start: usize, graph: &Graph<EdgeWithLength>) -> Vec<u64> {
     queue.push(Reverse((0, start)));
 
     while let Some(Reverse((d, u))) = queue.pop() {
+        if distances[u] < d {
+            continue;
+        }
         for edge in graph.edges(u) {
             let adj = edge.to;
             let edge_len = edge.len;
