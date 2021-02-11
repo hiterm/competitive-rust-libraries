@@ -22,19 +22,14 @@ where
     }
 
     fn pop_max(&mut self) -> Option<T> {
-        let max = self.iter().next_back().cloned();
-        match max {
-            None => None,
-            Some(max) => self.take(&max),
-        }
+        self.iter()
+            .next_back()
+            .cloned()
+            .and_then(|max| self.take(&max))
     }
 
     fn pop_min(&mut self) -> Option<T> {
-        let min = self.iter().next().cloned();
-        match min {
-            None => None,
-            Some(min) => self.take(&min),
-        }
+        self.iter().next().cloned().and_then(|min| self.take(&min))
     }
 
     fn get_range_max<R: RangeBounds<T>>(&self, range: R) -> Option<&T> {
