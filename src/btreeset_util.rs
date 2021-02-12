@@ -22,14 +22,16 @@ where
     }
 
     fn pop_max(&mut self) -> Option<T> {
-        self.iter()
-            .next_back()
-            .cloned()
-            .and_then(|max| self.take(&max))
+        self.iter().next_back().cloned().map(
+            |max| self.take(&max).unwrap(), // 必ずSomeになるはず
+        )
     }
 
     fn pop_min(&mut self) -> Option<T> {
-        self.iter().next().cloned().and_then(|min| self.take(&min))
+        self.iter()
+            .next()
+            .cloned()
+            .map(|min| self.take(&min).unwrap())
     }
 
     fn get_range_max<R: RangeBounds<T>>(&self, range: R) -> Option<&T> {
