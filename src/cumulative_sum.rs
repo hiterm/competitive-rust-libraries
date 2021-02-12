@@ -1,8 +1,10 @@
+use crate::num_traits::Zero;
+
 pub fn cumulative_sum<T>(v: &Vec<T>) -> Vec<T>
 where
-    T: Clone + std::ops::Add<Output = T> + From<u8>,
+    T: Clone + std::ops::Add<Output = T> + Zero,
 {
-    let zero: T = 0.into();
+    let zero = T::zero();
     let mut sum = vec![zero.clone()];
     let mut now = zero;
     for vi in v.iter().cloned() {

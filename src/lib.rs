@@ -21,6 +21,7 @@ pub mod matrix;
 pub mod max_flow;
 pub mod mint_util_acl;
 pub mod multi_vec;
+pub mod num_traits;
 pub mod number_theory;
 pub mod one_based;
 pub mod rerooting;

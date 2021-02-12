@@ -1,6 +1,8 @@
 use std::ops::{Add, Mul};
 
-#[derive(Clone)]
+use crate::num_traits::Zero;
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 struct Matrix<T> {
     entries: Vec<Vec<T>>,
 }
@@ -26,9 +28,31 @@ where
     }
 }
 
+impl<T> Add for Matrix<T>
+where
+    T: Clone + Default + Add<Output = T> + Zero,
+{
+    type Output = Matrix<T>;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        assert_eq!(self.width(), rhs.width());
+        assert_eq!(self.height(), rhs.height());
+
+        let width = self.width();
+        let height = self.height();
+        let mut ret = vec![vec![T::default(); width]; height];
+        for r in 0..height {
+            for c in 0..width {
+                ret[r][c] = self.get(r, c) + rhs.get(r, c);
+            }
+        }
+        Matrix::new(ret)
+    }
+}
+
 impl<T> Mul for Matrix<T>
 where
-    T: Add<Output = T> + Mul<Output = T> + Default + Clone,
+    T: Clone + Default + Add<Output = T> + Mul<Output = T> + Zero,
 {
     type Output = Matrix<T>;
 
@@ -40,8 +64,7 @@ where
         let mut ret = vec![vec![T::default(); width]; height];
         for r in 0..height {
             for c in 0..width {
-                // Defaultが加法単位元であることを仮定
-                let mut sum = T::default();
+                let mut sum = T::zero();
                 for i in 0..mul_num {
                     sum = sum + self.get(r, i) * rhs.get(i, c);
                 }
@@ -49,5 +72,31 @@ where
             }
         }
         Matrix::new(ret)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn add_case1() {
+        let m1 = Matrix::new(vec![vec![1, 0], vec![0, 1]]);
+        let m2 = Matrix::new(vec![vec![1, 2], vec![3, 4]]);
+        assert_eq!(Matrix::new(vec![vec![2, 2], vec![3, 5]]), m1 + m2);
+    }
+
+    #[test]
+    fn mul_case1() {
+        let m1 = Matrix::new(vec![vec![1, 0], vec![0, 1]]);
+        let m2 = Matrix::new(vec![vec![1, 2], vec![3, 4]]);
+        assert_eq!(Matrix::new(vec![vec![1, 2], vec![3, 4]]), m1 * m2);
+    }
+
+    #[test]
+    fn mul_case2() {
+        let m1 = Matrix::new(vec![vec![1, 2], vec![3, 4]]);
+        let m2 = Matrix::new(vec![vec![4, 3], vec![2, 1]]);
+        assert_eq!(Matrix::new(vec![vec![8, 5], vec![20, 13]]), m1 * m2);
     }
 }
