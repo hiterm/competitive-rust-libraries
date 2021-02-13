@@ -16,13 +16,15 @@ macro_rules! getl {
 #[allow(unused_macros)]
 #[macro_export]
 macro_rules! getl_parse_one {
-    // ($it:expr, [$t:ty; $n:expr]) => {
-    //     let mut v = vec![];
-    //     for _ in 0..$n {
-    //         v.push($it.next().unwrap().parse::<$t>().unwrap());
-    //     }
-    //     v
-    // };
+    ($it:expr, [$t:ty; $n:expr]) => {
+        {
+            let mut v = vec![];
+            for _ in 0..$n {
+                v.push($it.next().unwrap().parse::<$t>().unwrap());
+            }
+            v
+        }
+    };
     ($it:expr, $t:ty) => {
         $it.next().unwrap().parse::<$t>().unwrap()
     };
