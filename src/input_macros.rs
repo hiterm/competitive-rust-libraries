@@ -11,6 +11,15 @@ macro_rules! getl {
             ( $( $crate::getl_parse_one!( ws, $t ) ),* )
         }
     };
+    ( $( $t:tt ),* ) => {
+        {
+            let mut s = String::new();
+            std::io::stdin().read_line(&mut s).unwrap();
+            let s = s.trim_end();
+            let mut ws = s.split_whitespace();
+            ( $( $crate::getl_parse_one!( ws, $t ) ),* )
+        }
+    };
 }
 
 #[allow(unused_macros)]
