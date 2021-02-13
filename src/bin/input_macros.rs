@@ -16,4 +16,6 @@ fn main() {
     println!("{} {}", a, b);
     let v = getl!(reader; [usize; 2]);
     println!("{:?}", v);
+    let v = getl_vec!(reader; usize);
+    println!("{:?}", v);
 }
