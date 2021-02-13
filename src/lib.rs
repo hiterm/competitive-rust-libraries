@@ -26,6 +26,7 @@ pub mod number_theory;
 pub mod one_based;
 pub mod rerooting;
 pub mod rerooting_edge;
+pub mod scanner;
 pub mod segment_tree;
 pub mod semigroup;
 pub mod union_find;
