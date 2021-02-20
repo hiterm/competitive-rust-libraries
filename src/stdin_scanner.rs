@@ -1,3 +1,5 @@
+// slower than Scanner
+
 use std::{
     io::{BufRead, StdinLock},
     str::{FromStr, SplitWhitespace},
