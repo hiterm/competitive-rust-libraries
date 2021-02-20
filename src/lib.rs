@@ -29,5 +29,6 @@ pub mod rerooting_edge;
 pub mod scanner;
 pub mod segment_tree;
 pub mod semigroup;
+pub mod stdin_scanner;
 pub mod union_find;
 pub mod vec_utils;
