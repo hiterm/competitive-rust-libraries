@@ -3,13 +3,13 @@ pub struct Adjacent {
 }
 
 impl Adjacent {
-    pub fn new(point: (usize, usize), size: (usize, usize)) -> Adjacent {
-        const DIFFS: [(i64, i64); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];
+    const DIFFS: [(i64, i64); 4] = [(1, 0), (-1, 0), (0, 1), (0, -1)];
 
+    pub fn new(point: (usize, usize), size: (usize, usize)) -> Adjacent {
         let mut adj_points = vec![];
         let (r, c) = point;
         let (sr, sc) = size;
-        for (dr, dc) in DIFFS.iter().copied() {
+        for (dr, dc) in Adjacent::DIFFS.iter().copied() {
             let ar = r as i64 + dr;
             let ac = c as i64 + dc;
             if 0 <= ar && ar < sr as i64 && 0 <= ac && ac < sc as i64 {
