@@ -1,4 +1,4 @@
-use competitive_rust_libraries::scanner::{Scanner, read_stdin};
+use competitive_rust_libraries::scanner::{read_stdin, Scanner};
 
 fn main() {
     let s = read_stdin();
