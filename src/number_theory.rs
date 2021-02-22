@@ -1,6 +1,6 @@
 #![allow(unused)]
-use std::collections::{HashMap, HashSet};
 use maplit::hashmap;
+use std::collections::{HashMap, HashSet};
 
 pub fn gcd(a: usize, b: usize) -> usize {
     let c = a % b;
@@ -50,7 +50,34 @@ pub fn prime_sieve(n: usize) -> Vec<u64> {
     primes
 }
 
-pub fn prime_factor(n: u64) -> HashMap<u64, u64> {
+pub fn prime_factor(n: u64) -> Vec<(u64, u64)> {
+    let mut rest = n;
+    let mut factors = vec![];
+    for d in 2..=n {
+        if d * d > n {
+            break;
+        }
+
+        if rest % d != 0 {
+            continue;
+        }
+
+        let mut count = 0;
+        while rest % d == 0 {
+            // let count = factors.entry(d).or_insert(0);
+            count += 1;
+            rest /= d;
+        }
+        factors.push((d, count))
+    }
+    if rest != 1 {
+        factors.push((rest, 1));
+    }
+
+    factors
+}
+
+pub fn prime_factor_hashmap(n: u64) -> HashMap<u64, u64> {
     let mut rest = n;
     let mut factors = HashMap::new();
     for d in 2..=n {
@@ -90,8 +117,16 @@ pub fn divisors(n: u64) -> Vec<u64> {
     ret
 }
 
-pub fn divisors_using_prime_factor(n: u64) -> Vec<u64> {
-    prime_factor(n).iter().fold(vec![1], |acc, (&p, &pow)| {
+pub fn divisors_using_prime_factor(n: u64, factors: &Vec<(u64, u64)>) -> Vec<u64> {
+    factors.iter().fold(vec![1], |acc, &(p, pow)| {
+        (0..=pow)
+            .flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32)))
+            .collect()
+    })
+}
+
+pub fn divisors_using_prime_factor_hashmap(n: u64, factors: HashMap<u64, u64>) -> Vec<u64> {
+    factors.iter().fold(vec![1], |acc, (&p, &pow)| {
         (0..=pow)
             .flat_map(|i| acc.iter().map(move |a| a * p.pow(i as u32)))
             .collect()
@@ -197,11 +232,13 @@ mod tests {
 
     #[test]
     fn prime_factor_5() {
-        assert_eq!(hashmap!{5 => 1}, prime_factor(5));
+        assert_eq!(vec![(5, 1)], prime_factor(5));
+        assert_eq!(hashmap! {5 => 1}, prime_factor_hashmap(5));
     }
 
     #[test]
     fn prime_factor_12() {
-        assert_eq!(hashmap!{2 => 2, 3 => 1}, prime_factor(12));
+        assert_eq!(vec![(2, 2), (3, 1)], prime_factor(12));
+        assert_eq!(hashmap! {2 => 2, 3 => 1}, prime_factor_hashmap(12));
     }
 }
