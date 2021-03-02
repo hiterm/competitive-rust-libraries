@@ -3,6 +3,13 @@ use maplit::hashmap;
 use std::collections::{HashMap, HashSet};
 
 pub fn gcd(a: usize, b: usize) -> usize {
+    if a == 0 && b == 0 {
+        return 0;
+    }
+    if b == 0 {
+        return gcd(b, a);
+    }
+
     let c = a % b;
     if c == 0 {
         b
@@ -200,6 +207,14 @@ impl Factorize {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn gcd_test() {
+        assert_eq!(6, gcd(12, 18));
+        assert_eq!(3, gcd(0, 3));
+        assert_eq!(3, gcd(3, 0));
+        assert_eq!(0, gcd(0, 0));
+    }
+
     #[test]
     fn binom_coef_test() {
         assert_eq!(6, binom_coef(4, 2));
