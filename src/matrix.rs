@@ -1,9 +1,9 @@
 use std::ops::{Add, Mul};
 
-use crate::num_traits::Zero;
+use crate::num_traits::{One, Zero};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-struct Matrix<T> {
+pub struct Matrix<T> {
     entries: Vec<Vec<T>>,
 }
 
@@ -11,20 +11,51 @@ impl<T> Matrix<T>
 where
     T: Clone,
 {
-    fn new(entries: Vec<Vec<T>>) -> Matrix<T> {
+    pub fn new(entries: Vec<Vec<T>>) -> Matrix<T> {
         Matrix { entries }
     }
 
-    fn get(&self, r: usize, c: usize) -> T {
+    pub fn get(&self, r: usize, c: usize) -> T {
         self.entries[r][c].clone()
     }
 
-    fn height(&self) -> usize {
+    pub fn height(&self) -> usize {
         self.entries.len()
     }
 
-    fn width(&self) -> usize {
+    pub fn width(&self) -> usize {
         self.entries[0].len()
+    }
+}
+
+impl<T> Matrix<T>
+where
+    T: Clone + Default + Add<Output = T> + Mul<Output = T> + Zero + One,
+{
+    pub fn identity(size: usize) -> Matrix<T> {
+        let mut entries = vec![vec![T::zero(); size]; size];
+        for i in 0..size {
+            entries[i][i] = T::one();
+        }
+
+        Matrix::new(entries)
+    }
+
+    pub fn pow(self, mut n: u64) -> Self {
+        assert_eq!(self.height(), self.width());
+
+        let size = self.height();
+
+        let mut x = self;
+        let mut r = Self::identity(size);
+        while n > 0 {
+            if n & 1 == 1 {
+                r = r * x.clone();
+            }
+            x = x.clone() * x;
+            n >>= 1;
+        }
+        r
     }
 }
 
