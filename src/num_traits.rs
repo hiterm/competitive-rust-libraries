@@ -2,6 +2,8 @@ use std::ops::Mul;
 
 use ac_library_rs::ModInt1000000007;
 
+// Zero trait
+
 pub trait Zero {
     fn zero() -> Self;
 }
@@ -18,6 +20,8 @@ macro_rules! impl_zero_int(($($ty:ty),*) => {
 
 impl_zero_int!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
 
+// One trait
+
 pub trait One {
     fn one() -> Self;
 }
@@ -33,6 +37,8 @@ macro_rules! impl_one_int(($($ty:ty),*) => {
 });
 
 impl_one_int!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize);
+
+// Pow trait
 
 trait Pow {
     fn pow(&self, n: u64) -> Self;
@@ -56,6 +62,8 @@ where
         r
     }
 }
+
+// impl Zero and One for ModInt
 
 impl Zero for ModInt1000000007 {
     fn zero() -> Self {
