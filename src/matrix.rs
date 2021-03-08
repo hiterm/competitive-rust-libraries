@@ -130,4 +130,10 @@ mod tests {
         let m2 = Matrix::new(vec![vec![4, 3], vec![2, 1]]);
         assert_eq!(Matrix::new(vec![vec![8, 5], vec![20, 13]]), m1 * m2);
     }
+
+    #[test]
+    fn pow_case1() {
+        let m1 = Matrix::new(vec![vec![2, 0], vec![0, 2]]);
+        assert_eq!(Matrix::new(vec![vec![16, 0], vec![0, 16]]), m1.pow(4));
+    }
 }
