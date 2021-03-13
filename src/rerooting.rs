@@ -3,7 +3,7 @@ use crate::graph_struct::{Edge, Graph};
 // https://algo-logic.info/tree-dp/
 
 pub trait Monoid: Clone + Copy {
-    const IDENTITY: Self;
+    fn identity() -> Self;
 }
 
 struct Rerooting<'a, T, E: Edge, F1, F2> {
@@ -23,7 +23,7 @@ where
 {
     fn new(n: usize, graph: &Graph<E>, merge: F1, add_root: F2) -> Rerooting<T, E, F1, F2> {
         let dp = vec![vec![]; n];
-        let ans = vec![T::IDENTITY; n];
+        let ans = vec![T::identity(); n];
         Rerooting {
             dp,
             ans,
@@ -35,13 +35,13 @@ where
 
     fn build(&mut self) {
         self.dfs(0, None);
-        self.bfs(0, T::IDENTITY, None);
+        self.bfs(0, T::identity(), None);
     }
 
     fn dfs(&mut self, v: usize, p: Option<usize>) -> T {
-        let mut dp_cum = T::IDENTITY;
+        let mut dp_cum = T::identity();
         let deg = self.graph.degree(v);
-        self.dp[v] = vec![T::IDENTITY; deg];
+        self.dp[v] = vec![T::identity(); deg];
         for (i, edge) in self.graph.edges(v).iter().cloned().enumerate() {
             let next = edge.to();
             if matches!(p, Some(p) if next == p) {
@@ -64,8 +64,8 @@ where
             }
         }
 
-        let mut dp_l = vec![T::IDENTITY; deg + 1];
-        let mut dp_r = vec![T::IDENTITY; deg + 1];
+        let mut dp_l = vec![T::identity(); deg + 1];
+        let mut dp_r = vec![T::identity(); deg + 1];
         for i in 0..deg {
             dp_l[i + 1] = (self.merge)(dp_l[i], self.dp[v][i]);
         }
@@ -119,7 +119,9 @@ mod tests {
     }
 
     impl Monoid for Dp {
-        const IDENTITY: Self = Dp { value: -1 };
+        fn identity() -> Self {
+            Dp::new(-1)
+        }
     }
 
     #[test]
