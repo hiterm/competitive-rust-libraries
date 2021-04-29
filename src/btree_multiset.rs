@@ -19,6 +19,10 @@ where
         let entry = self.map.entry(elem).or_insert(0);
         *entry += 1;
     }
+    pub fn insert_cnt(&mut self, elem: T, cnt: i64) {
+        let entry = self.map.entry(elem).or_insert(0);
+        *entry += cnt;
+    }
 
     pub fn remove(&mut self, elem: &T) {
         let entry = self.map.get_mut(&elem).unwrap();
@@ -26,6 +30,21 @@ where
         if *entry == 0 {
             self.map.remove(&elem);
         }
+    }
+
+    pub fn remove_cnt(&mut self, elem: &T, cnt: i64) -> Result<(), String> {
+        let entry = self.map.get_mut(&elem).unwrap();
+        *entry -= cnt;
+        if *entry == 0 {
+            self.map.remove(&elem);
+        } else if *entry < 0 {
+            return Err(format!("This set does not have {} items.", cnt));
+        }
+        Ok(())
+    }
+
+    pub fn remove_all(&mut self, elem: &T) -> Option<i64> {
+        self.map.remove(elem)
     }
 
     pub fn contains(&self, elem: &T) -> bool {
@@ -42,6 +61,14 @@ where
 
     pub fn max(&self) -> Option<&T> {
         self.map.iter().rev().next().map(|(elem, _)| elem)
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+
+    pub fn iter(&self) -> std::collections::btree_map::Iter<T, i64> {
+        self.map.iter()
     }
 }
 
