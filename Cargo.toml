@@ -8,3 +8,4 @@ edition = "2018"
 ac-library-rs = { git = "https://github.com/rust-lang-ja/ac-library-rs" }
 maplit = "1.0.2"
 proconio = "0.4.1"
+rand = "0.8.5"

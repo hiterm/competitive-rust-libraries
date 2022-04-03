@@ -32,3 +32,4 @@ pub mod semigroup;
 pub mod stdin_scanner;
 pub mod union_find;
 pub mod vec_utils;
+pub mod random_generator;
